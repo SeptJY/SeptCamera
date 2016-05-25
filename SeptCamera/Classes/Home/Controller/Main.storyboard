@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="yvR-23-CXC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="yvR-23-CXC">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -71,24 +71,23 @@
                                             <action selector="iconsChooseOnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Mo0-gC-XTi"/>
                                         </connections>
                                     </button>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ynf-uF-UMY" customClass="JYLeftTopView">
-                                        <rect key="frame" x="0.0" y="0.0" width="150" height="55"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="150" id="ynY-6H-Qcg"/>
-                                            <constraint firstAttribute="height" constant="55" id="zRK-aM-XJj"/>
-                                        </constraints>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oQw-9r-Hqx" customClass="JYContentView">
+                                        <rect key="frame" x="70" y="65" width="400" height="515"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
                                     </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="njq-yi-CWz" secondAttribute="bottom" constant="15" id="0yj-XB-yeN"/>
-                                    <constraint firstItem="ynf-uF-UMY" firstAttribute="leading" secondItem="JFb-7e-135" secondAttribute="leading" id="FqG-7e-Fud"/>
+                                    <constraint firstAttribute="bottom" secondItem="oQw-9r-Hqx" secondAttribute="bottom" constant="20" id="KsN-vw-J51"/>
                                     <constraint firstItem="zEW-v4-rt1" firstAttribute="centerY" secondItem="JFb-7e-135" secondAttribute="centerY" id="NGi-ja-kUJ"/>
+                                    <constraint firstItem="oQw-9r-Hqx" firstAttribute="top" secondItem="JFb-7e-135" secondAttribute="top" constant="65" id="Nfw-cJ-KSn"/>
                                     <constraint firstAttribute="bottom" secondItem="68x-SQ-Ohn" secondAttribute="bottom" id="WNR-5F-aP7"/>
-                                    <constraint firstItem="ynf-uF-UMY" firstAttribute="top" secondItem="JFb-7e-135" secondAttribute="top" id="XBq-2Q-zzs"/>
                                     <constraint firstAttribute="trailing" secondItem="68x-SQ-Ohn" secondAttribute="trailing" id="ZK5-9b-lIl"/>
                                     <constraint firstItem="68x-SQ-Ohn" firstAttribute="top" secondItem="JFb-7e-135" secondAttribute="top" id="ZPK-aX-dE8"/>
                                     <constraint firstItem="njq-yi-CWz" firstAttribute="centerX" secondItem="y4w-Ld-HNX" secondAttribute="centerX" id="cXP-Vg-pUq"/>
+                                    <constraint firstItem="y4w-Ld-HNX" firstAttribute="leading" secondItem="oQw-9r-Hqx" secondAttribute="trailing" constant="20" id="iTb-YK-nVV"/>
                                     <constraint firstItem="y4w-Ld-HNX" firstAttribute="centerY" secondItem="JFb-7e-135" secondAttribute="centerY" id="msc-EX-Jgn"/>
+                                    <constraint firstItem="oQw-9r-Hqx" firstAttribute="leading" secondItem="JFb-7e-135" secondAttribute="leading" constant="70" id="nrb-ua-g3m"/>
                                     <constraint firstItem="y4w-Ld-HNX" firstAttribute="height" secondItem="zEW-v4-rt1" secondAttribute="height" id="oJD-hR-WOe"/>
                                     <constraint firstItem="y4w-Ld-HNX" firstAttribute="trailing" secondItem="zEW-v4-rt1" secondAttribute="trailing" id="xrT-gg-kSh"/>
                                     <constraint firstItem="y4w-Ld-HNX" firstAttribute="width" secondItem="zEW-v4-rt1" secondAttribute="width" id="z0W-cg-zie"/>
@@ -116,6 +115,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="9y0-91-UCc"/>
                     <connections>
+                        <outlet property="contentView" destination="oQw-9r-Hqx" id="vNq-9w-1fp"/>
                         <outlet property="iconsBtn" destination="njq-yi-CWz" id="orX-b7-QcX"/>
                         <outlet property="photoBtn" destination="y4w-Ld-HNX" id="1VS-EH-Plb"/>
                         <outlet property="ruleBottomView" destination="68x-SQ-Ohn" id="BNP-Ca-Sns"/>
@@ -126,7 +126,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1230" y="730"/>
+            <point key="canvasLocation" x="988" y="750"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="VWC-N7-8y0">

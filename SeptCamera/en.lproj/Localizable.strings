@@ -1,0 +1,40 @@
+/* 
+  Localizable.strings
+  SeptCamera
+
+  Created by Sept on 16/5/19.
+  Copyright © 2016年 九月. All rights reserved.
+*/
+
+"蓝牙" = "Bluetooth";
+"分辨率" = "Resolution";
+"帧率" = "fps";
+"视频编码质量" = "Video coding quality";
+"语言" = "Language";
+"自动重复" = "Auto repeat";
+"附加镜头" = "Additional lens";
+"硬件支持" = "Hardware support";
+"闪光灯" = "flash lamp";
+"未连接" = "Not connected";
+"标准" = "standard";
+"两点" = "couple of points";
+"无镜头" = "No lens";
+"自动" = "Auto";
+"前置提示灯" = "Lead prompt lamp";
+"九宫格" = "Grid";
+"对比度" = "Contrast";
+"恢复默认设置" = "Restore default settings";
+
+"设置" = "Setting";
+"白平衡" = "WB";
+"曝光" = "EV";
+
+"色温" = "Temp";
+"色彩" = "Tint";
+"饱和度" = "Saturation";
+"曝光偏移" = "Offset";
+"曝光时间" = "Time";
+"感  光  度" = "ISO";
+"曝光补偿" = "Compensation";
+
+

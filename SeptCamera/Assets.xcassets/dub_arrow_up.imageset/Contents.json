@@ -2,11 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "dub_arrow_up.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "dub_arrow_up.png",
+      "filename" : "dub_arrow_up@2x.png",
       "scale" : "2x"
     },
     {

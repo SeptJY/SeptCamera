@@ -8,40 +8,45 @@
 
 #import "JYHomeController.h"
 
-#import "JYCameraManager.h"
+//#import "JYCameraManager.h"
 #import "DWBubbleMenuButton.h"
 #import "JYLeftTopViewMasnory.h"
 #import "JYLeftTopView.h"
 #import "JYContentView.h"
+#import "JYVideoCamera.h"
 
 #define ScreenW [UIScreen mainScreen].bounds.size.width
 #define ScreenH [UIScreen mainScreen].bounds.size.height
 
-@interface JYHomeController () <DWBubbleMenuViewDelegate, JYLeftTopViewDelegate>
+@interface JYHomeController () <DWBubbleMenuViewDelegate, JYLeftTopViewDelegate, JYVideoCameraDelegate>
+{
+    NSTimer *_timer;
+    CMSampleBufferRef _sampleBufferRef;
+}
 
-@property (strong, nonatomic) JYCameraManager *videoCamera;
+@property (strong, nonatomic) JYVideoCamera *videoCamera;
 
-@property (weak, nonatomic) IBOutlet UIView *subView;
+@property (strong, nonatomic) UIView *subView;
 
-@property (weak, nonatomic) IBOutlet UIView *screenView;
+//@property (strong, nonatomic) UIView *screenView;
 
-@property (strong, nonatomic) UIImageView *focusView;
-@property (strong, nonatomic) UIImageView *zoomView;
+//@property (strong, nonatomic) UIImageView *focusView;
+//@property (strong, nonatomic) UIImageView *zoomView;
 
-@property (weak, nonatomic) IBOutlet UIView *ruleBottomView;
-@property (weak, nonatomic) IBOutlet JYContentView *contentView;
+//@property (strong, nonatomic) UIView *ruleBottomView;
+//@property (strong, nonatomic) JYContentView *contentView;
 
 @property (assign, nonatomic) CGFloat videoFocus;
 @property (strong, nonatomic) JYLeftTopView *leftTopView;
-
-@property (weak, nonatomic) IBOutlet UIButton *videoBtn;
-@property (weak, nonatomic) IBOutlet UIButton *photoBtn;
-@property (weak, nonatomic) IBOutlet UIButton *iconsBtn;
 
 @property (strong, nonatomic) DWBubbleMenuButton *menuBtn;
 @property (strong, nonatomic) UIButton *videoBtns;
 @property (strong, nonatomic) UIButton *phtotBtn;
 @property (strong, nonatomic) UIButton *enlargeBtn;
+
+@property (strong, nonatomic) NSMutableArray *imgsArray;
+
+@property (strong, nonatomic) UIImageView *imgView;
 
 @end
 
@@ -53,23 +58,113 @@
     
     self.navigationController.navigationBarHidden = YES;
     
-    self.focusView.image = [UIImage imageNamed:@"1x_focus"];
-    self.zoomView.image = [UIImage imageNamed:@"home_dz_rule_icon"];
+    [self initVideoCamera];
+    
+    [self addSubviews];
+    
+    [self setupConstraints];
+    
+//    self.focusView.image = [UIImage imageNamed:@"1x_focus"];
+//    self.zoomView.image = [UIImage imageNamed:@"home_dz_rule_icon"];
     
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureOnClick:)];
     
-    [self.ruleBottomView addGestureRecognizer:panGesture];
+//    [self.ruleBottomView addGestureRecognizer:panGesture];
+    self.imgsArray = [NSMutableArray array];
     
-//    [NSTimer scheduledTimerWithTimeInterval:20.0/1000 target:self selector:@selector(ruleImgViewTimer) userInfo:nil repeats:YES];
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1000.0/1000 target:self selector:@selector(longExposure) userInfo:nil repeats:YES];
+    [_timer setFireDate:[NSDate distantFuture]];
     
-    [self addObserver:self forKeyPath:@"videoFocus" options:NSKeyValueObservingOptionNew context:nil];
+//    [self addObserver:self forKeyPath:@"videoFocus" options:NSKeyValueObservingOptionNew context:nil];
     
     _dispatchQueue = dispatch_queue_create("com.tapharmonic.CaptureDispatchQueue", NULL);
     
     self.videoFocus = (ScreenH - 30) * 0.5;
     
-    [self.screenView addSubview:self.menuBtn];
     
+    
+//    NSArray *imgs = @[[UIImage imageNamed:@"IMG_7706"], [UIImage imageNamed:@"IMG_7707"]];
+//    
+//    [self createLongExposure:imgs];
+//    UIImageWriteToSavedPhotosAlbum([self createLongExposure:imgs], nil, nil, nil);
+    
+    
+    
+    
+}
+
+- (void)addSubviews
+{
+    [self.view addSubview:self.subView];
+    
+    [self.subView addSubview:self.menuBtn];
+}
+
+- (void)initVideoCamera
+{
+    self.videoCamera = [[JYVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset1920x1080 superView:self.view];
+    [self.videoCamera flashModel:AVCaptureFlashModeAuto];
+    //        [self.bottomPreview addSubview:_videoCamera.subPreview];
+    self.videoCamera.delegate = self;
+}
+
+- (UIView *)subView
+{
+    if (!_subView) {
+        
+        _subView = [[UIView alloc] init];
+        
+        [self.view addSubview:_subView];
+    }
+    return _subView;
+}
+
+- (void)longExposure
+{
+//    UIImage *image = [UIImage imageFromSampleBuffer:_sampleBufferRef];
+//    NSLog(@"%@", image);
+    
+//    [self.imgsArray addObject:image];
+    [self.videoCamera takePhoto];
+}
+
+- (void)cameraManageTakingPhotoSucuess:(UIImage *)image
+{
+    [self.imgsArray addObject:image];
+    self.imgView.image = [self createLongExposure:self.imgsArray];
+}
+
+- (UIImage *) createLongExposure:(NSArray *)images {
+    UIImage *firstImg = images[0];
+    CGSize imgSize = firstImg.size;
+    CGFloat alpha = 1.0 / images.count;
+    
+    UIGraphicsBeginImageContext(imgSize);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [[UIColor blackColor] CGColor]);
+    CGContextFillRect(context, CGRectMake(0, 0, imgSize.width, imgSize.height));
+    
+    for (UIImage *image in images) {
+        [image drawInRect:CGRectMake(0, 0, imgSize.width, imgSize.height)
+                blendMode:kCGBlendModePlusLighter alpha:alpha];
+    }
+    UIImage *longExpImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return longExpImg;
+}
+
+- (UIImageView *)imgView
+{
+    if (!_imgView) {
+        
+        _imgView = [[UIImageView alloc] init];
+        
+        _imgView.backgroundColor = [UIColor clearColor];
+        _imgView.alpha = 0.6;
+        
+        [self.view addSubview:_imgView];
+    }
+    return _imgView;
 }
 
 /** 左上角设置按钮和快捷键按钮 */
@@ -81,16 +176,16 @@
         _leftTopView.backgroundColor = [UIColor clearColor];
         _leftTopView.delegate = self;
         
-        [self.screenView addSubview:_leftTopView];
+        [self.subView addSubview:_leftTopView];
     }
     return _leftTopView;
 }
 
-#pragma mark -------------------------> JYLeftTopViewDelegate
-- (void)leftTopViewQuickOrSettingBtnOnClick:(UIButton *)btn
-{
-    self.contentView.hidden = !btn.selected;
-}
+//#pragma mark -------------------------> JYLeftTopViewDelegate
+//- (void)leftTopViewQuickOrSettingBtnOnClick:(UIButton *)btn
+//{
+//    self.contentView.hidden = !btn.selected;
+//}
 
 - (DWBubbleMenuButton *)menuBtn
 {
@@ -188,14 +283,14 @@
     
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"videoFocus"]) {
-        [self animationWith:self.videoFocus layer:self.focusView.layer];
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+//{
+//    if ([keyPath isEqualToString:@"videoFocus"]) {
+//        [self animationWith:self.videoFocus layer:self.focusView.layer];
+//    } else {
+//        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+//    }
+//}
 
 - (IBAction)chinaOnClick:(UIButton *)sender
 {
@@ -224,70 +319,69 @@
     [self.videoCamera stopCamera];
 }
 
-- (JYCameraManager *)videoCamera {
-    if (!_videoCamera) {
-        _videoCamera = [[JYCameraManager alloc] initWithFrame:self.view.bounds superview:self.subView];
-        //        _videoCamera.cameraDelegate = self;
-        [_videoCamera flashModel:AVCaptureFlashModeAuto];
-        //        [self.bottomPreview addSubview:_videoCamera.subPreview];
-    }
-    return _videoCamera;
+
+
+#pragma mark -------------------------> JYVideoCameraDelegate
+- (void)videoCameraDidOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+{
+//    NSLog(@"aaaa");
+    _sampleBufferRef = sampleBuffer;
 }
 
-/** 刻度尺图片View */
-- (UIImageView *)focusView
-{
-    if (!_focusView) {
-        
-        _focusView = [[UIImageView alloc] init];
-        
-        [self.ruleBottomView  addSubview:_focusView];
-        
-        [_focusView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.ruleBottomView).offset(0);
-            make.bottom.equalTo(self.ruleBottomView).offset(0);
-            make.left.equalTo(self.ruleBottomView).offset(0);
-            make.right.equalTo(self.ruleBottomView).offset(0);
-        }];
-    }
-    return _focusView;
-}
+///** 刻度尺图片View */
+//- (UIImageView *)focusView
+//{
+//    if (!_focusView) {
+//        
+//        _focusView = [[UIImageView alloc] init];
+//        
+//        [self.ruleBottomView  addSubview:_focusView];
+//        
+//        [_focusView mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.top.equalTo(self.ruleBottomView).offset(0);
+//            make.bottom.equalTo(self.ruleBottomView).offset(0);
+//            make.left.equalTo(self.ruleBottomView).offset(0);
+//            make.right.equalTo(self.ruleBottomView).offset(0);
+//        }];
+//    }
+//    return _focusView;
+//}
+//
+//- (UIImageView *)zoomView
+//{
+//    if (!_zoomView) {
+//        
+//        _zoomView = [[UIImageView alloc] init];
+//        
+//        _zoomView.hidden = YES;
+//        [self.ruleBottomView  addSubview:_zoomView];
+//        
+//        [_zoomView mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.top.equalTo(self.ruleBottomView).offset(0);
+//            make.bottom.equalTo(self.ruleBottomView).offset(0);
+//            make.left.equalTo(self.ruleBottomView).offset(0);
+//            make.right.equalTo(self.ruleBottomView).offset(0);
+//        }];
+//    }
+//    return _zoomView;
+//}
 
-- (UIImageView *)zoomView
-{
-    if (!_zoomView) {
-        
-        _zoomView = [[UIImageView alloc] init];
-        
-        _zoomView.hidden = YES;
-        [self.ruleBottomView  addSubview:_zoomView];
-        
-        [_zoomView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.ruleBottomView).offset(0);
-            make.bottom.equalTo(self.ruleBottomView).offset(0);
-            make.left.equalTo(self.ruleBottomView).offset(0);
-            make.right.equalTo(self.ruleBottomView).offset(0);
-        }];
-    }
-    return _zoomView;
-}
-
-- (void)panGestureOnClick:(UIPanGestureRecognizer *)panGesture
-{
-    if (panGesture.state == UIGestureRecognizerStateChanged || panGesture.state == UIGestureRecognizerStateEnded) {
-        
-        CGPoint translation = [panGesture translationInView:self.ruleBottomView];
-        
-        self.videoFocus += translation.y;
-        
-        [panGesture setTranslation:CGPointMake(0, 0) inView:self.ruleBottomView];
-    }
-}
-
-- (void)ruleImgViewTimer
-{
-    [self animationWith:self.videoFocus layer:self.focusView.layer];
-}
+//- (void)panGestureOnClick:(UIPanGestureRecognizer *)panGesture
+//{
+//    if (panGesture.state == UIGestureRecognizerStateChanged || panGesture.state == UIGestureRecognizerStateEnded) {
+//        
+//        CGPoint translation = [panGesture translationInView:self.ruleBottomView];
+//        
+//        self.videoFocus += translation.y;
+//        
+//        [panGesture setTranslation:CGPointMake(0, 0) inView:self.ruleBottomView];
+//    }
+//}
+//
+//- (void)ruleImgViewTimer
+//{
+//    [self animationWith:self.videoFocus layer:self.focusView.layer];
+//}
 
 - (void)animationWith:(CGFloat)value layer:(CALayer *)layer
 {
@@ -310,11 +404,41 @@
     [layer addAnimation:anima forKey:nil];
 }
 
-- (IBAction)videoCameraOnClick:(UIButton *)sender {
+- (IBAction)videoCameraOnClick:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    if (sender.selected == 1) {
+//        [self.videoCamera startVideo];
+        [_timer setFireDate:[NSDate date]];
+    } else {
+//        [self.videoCamera stopVideo];
+        [_timer setFireDate:[NSDate distantFuture]];
+        
+        
+        UIImageWriteToSavedPhotosAlbum([self createLongExposure:self.imgsArray], nil, nil, nil);
+        self.imgView.image = nil;
+    }
+//    [self.videoCamera takePhoto];
+    
 }
 - (IBAction)takePhotoOnClick:(UIButton *)sender {
 }
 - (IBAction)iconsChooseOnClick:(UIButton *)sender {
+}
+
+- (void)setupConstraints
+{
+    __weak JYHomeController *weakSelf = self;
+    [self.subView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(weakSelf.view);
+        make.leading.equalTo(weakSelf.view);
+        make.bottom.equalTo(weakSelf.view);
+        make.trailing.equalTo(weakSelf.view);
+    }];
+    
+    [self.imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.bottom.trailing.mas_equalTo(weakSelf.subView);
+    }];
 }
 
 - (void)viewWillLayoutSubviews

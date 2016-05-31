@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol JYLeftTopViewDelegate <NSObject>
+@protocol JYLeftTopViewDelegate1 <NSObject>
 
 @optional
 - (void)leftTopSettingBtnOnClick;
@@ -19,6 +19,6 @@
 
 @property (strong, nonatomic) UILabel *quickLabel;
 
-@property (weak, nonatomic) id<JYLeftTopViewDelegate> delegate;
+@property (weak, nonatomic) id<JYLeftTopViewDelegate1> delegate;
 
 @end

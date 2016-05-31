@@ -68,6 +68,7 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
     {
 		return nil;
     }
+//    self.timer = [NSTimer scheduledTimerWithTimeInterval:500.0/1000 target:self selector:@selector(ruleImgViewTimer) userInfo:nil repeats:YES];
     
     /* Detect iOS version < 6 which require a texture cache corruption workaround */
 #pragma clang diagnostic push
@@ -273,6 +274,7 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
 
 - (void)capturePhotoProcessedUpToFilter:(GPUImageOutput<GPUImageInput> *)finalFilterInChain withImageOnGPUHandler:(void (^)(NSError *error))block
 {
+    NSLog(@"%s  -%d", __func__, __LINE__);
     dispatch_semaphore_wait(frameRenderingSemaphore, DISPATCH_TIME_FOREVER);
 
     if(photoOutput.isCapturingStillImage){
@@ -285,6 +287,9 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
             block(error);
             return;
         }
+        
+#warning 在这里对图片做处理
+        
 
         // For now, resize photos to fix within the max texture size of the GPU
         CVImageBufferRef cameraFrame = CMSampleBufferGetImageBuffer(imageSampleBuffer);
@@ -313,6 +318,7 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
         }
         else
         {
+            // 这是一个，有时返回拍照时用前置摄像头和使用iOS 5的纹理缓存损坏的图像的方法
             // This is a workaround for the corrupt images that are sometimes returned when taking a photo with the front camera and using the iOS 5.0 texture caches
             AVCaptureDevicePosition currentCameraPosition = [[videoInput device] position];
             if ( (currentCameraPosition != AVCaptureDevicePositionFront) || (![GPUImageContext supportsFastTextureUpload]) || !requiresFrontCameraTextureCacheCorruptionWorkaround)

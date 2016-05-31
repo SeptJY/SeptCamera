@@ -148,4 +148,49 @@
     return thumb;
 }
 
++ (UIImage *)imageFromSampleBuffer:(CMSampleBufferRef)sampleBuffer
+{
+//    //  为媒体数据设置一个CMSampleBuffer的Core Video图像缓存对象
+//    CVImageBufferRef imageBufferRef = CMSampleBufferGetImageBuffer(sampleBuffer);
+//    // 锁定pixel buffer的基地址
+//    void *baseAddress = CVPixelBufferGetBaseAddress(imageBufferRef);
+//    
+//    // 得到pixel buffer的行字节数
+//    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBufferRef);
+//    //  得到pixel buffer 的宽和高
+//    size_t width = CVPixelBufferGetWidth(imageBufferRef);
+//    size_t height = CVPixelBufferGetWidth(imageBufferRef);
+//    
+//    // 创建一个依赖于设备的RGB颜色空间，
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+//    
+//    // 用抽样缓存的数据创建一个位图格式的图形上下文(graphics context) 对象
+//    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+//    
+//    // 根据这个位图context 中的像素数据创建一个Quartz image对象
+//    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+//    // 解锁pixel buffer
+//    CVPixelBufferUnlockBaseAddress(imageBufferRef, 0);
+//    
+//    // 释放context和颜色空间
+//    CGContextRelease(context);
+//    CGColorSpaceRelease(colorSpace);
+//    
+//    // 用Quartz image 创建一个UIImage 对象 image
+//    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+//    
+//    // 释放quartz image 对象
+//    CGImageRelease(quartzImage);
+    
+    CMBlockBufferRef blockBufferRef = CMSampleBufferGetDataBuffer(sampleBuffer);
+    size_t length = CMBlockBufferGetDataLength(blockBufferRef);
+    Byte buffer[length];
+    CMBlockBufferCopyDataBytes(blockBufferRef, 0, length, buffer);
+    NSData *data = [NSData dataWithBytes:buffer length:length];
+    
+    UIImage *image = [UIImage imageWithData:data];
+    
+    return image;
+}
+
 @end

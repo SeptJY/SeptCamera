@@ -1,16 +1,19 @@
 PODS:
   - GPUImage (0.1.7)
   - Masonry (1.0.0)
+  - MJExtension (3.0.10)
   - SVProgressHUD (2.0.3)
 
 DEPENDENCIES:
   - GPUImage (~> 0.1.7)
   - Masonry (~> 1.0.0)
+  - MJExtension (~> 3.0.10)
   - SVProgressHUD (~> 2.0.3)
 
 SPEC CHECKSUMS:
   GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
   Masonry: b529bb169217897b6354d4b56b1fada6d475b13d
+  MJExtension: d86aacb740c87519d20e3cca55b6fa4be6cc7548
   SVProgressHUD: b0830714205bea1317ea1a2ebc71e5633af334d4
 
 COCOAPODS: 0.39.0

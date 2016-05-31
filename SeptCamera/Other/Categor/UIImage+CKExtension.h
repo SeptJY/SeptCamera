@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreMedia/CoreMedia.h>
 
 @interface UIImage (CKExtension)
 /**
@@ -36,6 +37,8 @@
 + (instancetype)resizableWithImageName:(NSString *)imageName;
 
 + (UIImage *)getImage:(NSURL *)videoURL;
+
++ (UIImage *)imageFromSampleBuffer:(CMSampleBufferRef)sampleBuffer;
 
 
 @end

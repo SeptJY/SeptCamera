@@ -21,7 +21,7 @@ typedef void(^CanSetSessionPreset)(BOOL isCan);
 
 typedef void(^JYLableText)(NSString *text);
 
-@interface JYCameraManager : GPUImageVideoCamera
+@interface JYCameraManager : NSObject
 
 @property (weak, nonatomic) id<JYCameraManagerDelegate>cameraDelegate;
 

@@ -36,8 +36,8 @@
         
         self.videoSize = CGSizeMake(1280.0, 720.0);
         
-        self.defaultFormat = self.inputCamera.activeFormat;
-        defaultVideoMaxFrameDuration = self.inputCamera.activeVideoMaxFrameDuration;
+        self.defaultFormat = self.camera.inputCamera.activeFormat;
+        defaultVideoMaxFrameDuration = self.camera.inputCamera.activeVideoMaxFrameDuration;
         
         
     }
@@ -176,9 +176,9 @@
 - (void)switchFormatWithDesiredFPS:(CGFloat)desiredFPS
 {
     NSLog(@"ff %@", self.camera.inputCamera.activeFormat);
-    BOOL isRunning = self.captureSession.isRunning;
+    BOOL isRunning = self.camera.captureSession.isRunning;
     
-    if (isRunning)  [self.captureSession stopRunning];
+    if (isRunning)  [self.camera.captureSession stopRunning];
     
     AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     AVCaptureDeviceFormat *selectedFormat = nil;
@@ -224,15 +224,15 @@
 //        NSLog(@"cc %@", self.camera.captureSession.sessionPreset);
     }
     
-    if (isRunning) [self.captureSession startRunning];
+    if (isRunning) [self.camera.captureSession startRunning];
 }
 
 - (void)resetFormat {
     
-    BOOL isRunning = self.captureSession.isRunning;
+    BOOL isRunning = self.camera.captureSession.isRunning;
     
     if (isRunning) {
-        [self.captureSession stopRunning];
+        [self.camera.captureSession stopRunning];
     }
     
     AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -242,7 +242,7 @@
     [videoDevice unlockForConfiguration];
     
     if (isRunning) {
-        [self.captureSession startRunning];
+        [self.camera.captureSession startRunning];
     }
 }
 
@@ -274,7 +274,7 @@
 {
 //    NSLog(@"%f", value);
     CGFloat lensPosition = value - 0.5;
-    if (videoInput.device.position == AVCaptureDevicePositionBack) {
+    if (self.camera.inputCamera.position == AVCaptureDevicePositionBack) {
         if (lensPosition < 0) {
             lensPosition = 0;
         }
@@ -284,7 +284,7 @@
         }
         
         NSError *error = nil;
-        AVCaptureDevice *currentVideoDevice = videoInput.device;
+        AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
         if ([currentVideoDevice lockForConfiguration:&error]) {
             
             [currentVideoDevice setAutoFocusRangeRestriction:AVCaptureAutoFocusRangeRestrictionNone];
@@ -298,18 +298,18 @@
 
 - (void)cameraManagerExposureIOS:(CGFloat)iso
 {
-    if (iso >= self.inputCamera.activeFormat.maxISO) {
-        iso = self.inputCamera.activeFormat.maxISO;
+    if (iso >= self.camera.inputCamera.activeFormat.maxISO) {
+        iso = self.camera.inputCamera.activeFormat.maxISO;
     }
     
-    if (iso <= self.inputCamera.activeFormat.minISO) {
-        iso = self.inputCamera.activeFormat.minISO;
+    if (iso <= self.camera.inputCamera.activeFormat.minISO) {
+        iso = self.camera.inputCamera.activeFormat.minISO;
     }
     
     NSError *error = nil;
-    if ( [self.inputCamera lockForConfiguration:&error] ) {
-        [self.inputCamera setExposureModeCustomWithDuration:AVCaptureExposureDurationCurrent ISO:iso completionHandler:nil];
-        [self.inputCamera unlockForConfiguration];
+    if ( [self.camera.inputCamera lockForConfiguration:&error] ) {
+        [self.camera.inputCamera setExposureModeCustomWithDuration:AVCaptureExposureDurationCurrent ISO:iso completionHandler:nil];
+        [self.camera.inputCamera unlockForConfiguration];
     }
     else {
         NSLog( @"Could not lock device for configuration: %@", error );
@@ -323,13 +323,13 @@ static const float kExposureDurationPower = 5;
     NSError *error = nil;
     
     double p = pow( value, kExposureDurationPower ); // Apply power function to expand slider's low-end range
-    double minDurationSeconds = MAX( CMTimeGetSeconds(self.inputCamera.activeFormat.minExposureDuration ), kExposureMinimumDuration );
-    double maxDurationSeconds = CMTimeGetSeconds(self.inputCamera.activeFormat.maxExposureDuration );
+    double minDurationSeconds = MAX( CMTimeGetSeconds(self.camera.inputCamera.activeFormat.minExposureDuration ), kExposureMinimumDuration );
+    double maxDurationSeconds = CMTimeGetSeconds(self.camera.inputCamera.activeFormat.maxExposureDuration );
     double newDurationSeconds = p * ( maxDurationSeconds - minDurationSeconds ) + minDurationSeconds; // Scale from 0-1 slider range to actual duration
     
-    if ( [self.inputCamera lockForConfiguration:&error] ) {
-        [self.inputCamera setExposureModeCustomWithDuration:CMTimeMakeWithSeconds( newDurationSeconds, 1000*1000*1000 )  ISO:AVCaptureISOCurrent completionHandler:nil];
-        [self.inputCamera unlockForConfiguration];
+    if ( [self.camera.inputCamera lockForConfiguration:&error] ) {
+        [self.camera.inputCamera setExposureModeCustomWithDuration:CMTimeMakeWithSeconds( newDurationSeconds, 1000*1000*1000 )  ISO:AVCaptureISOCurrent completionHandler:nil];
+        [self.camera.inputCamera unlockForConfiguration];
     }
     else {
         NSLog( @"Could not lock device for configuration: %@", error );
@@ -341,7 +341,7 @@ static const float kExposureDurationPower = 5;
 - (void)cameraManagerWithExposure:(CGFloat)value
 {
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     
     [currentVideoDevice lockForConfiguration:&error];
     
@@ -355,7 +355,7 @@ static const float kExposureDurationPower = 5;
     CGFloat value = 2.5 - 3 * zoom;
 //        NSLog(@"赋值给系统 - %f", value);
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     
     [currentVideoDevice lockForConfiguration:&error];
     
@@ -378,13 +378,13 @@ static const float kExposureDurationPower = 5;
 {
     NSError *error = nil;
     
-    if ([_inputCamera lockForConfiguration:&error]) {
+    if ([self.camera.inputCamera lockForConfiguration:&error]) {
         
-        if ([_inputCamera isWhiteBalanceModeSupported:whiteBalanceMode] ) {
-            _inputCamera.whiteBalanceMode = whiteBalanceMode;
+        if ([self.camera.inputCamera isWhiteBalanceModeSupported:whiteBalanceMode] ) {
+            self.camera.inputCamera.whiteBalanceMode = whiteBalanceMode;
         }
         
-        [_inputCamera unlockForConfiguration];
+        [self.camera.inputCamera unlockForConfiguration];
         
     } else
     {
@@ -396,7 +396,7 @@ static const float kExposureDurationPower = 5;
 - (void)exposeMode:(AVCaptureExposureMode)exposureMode
 {
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     
     if ([currentVideoDevice lockForConfiguration:&error]) {
         
@@ -415,7 +415,7 @@ static const float kExposureDurationPower = 5;
 - (void)flashModel:(AVCaptureFlashMode)flashModel
 {
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     
     if ([currentVideoDevice lockForConfiguration:&error]) {
         
@@ -437,13 +437,13 @@ static const float kExposureDurationPower = 5;
         .temperature = temp,
         .tint = tint,
     };
-    [self cameraManagerSetWhiteBalanceGains:[videoInput.device deviceWhiteBalanceGainsForTemperatureAndTintValues:temperatureAndTint]];
+    [self cameraManagerSetWhiteBalanceGains:[self.camera.inputCamera deviceWhiteBalanceGainsForTemperatureAndTintValues:temperatureAndTint]];
 }
 
 - (void)cameraManagerSetWhiteBalanceGains:(AVCaptureWhiteBalanceGains)gains
 {
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     if ( [currentVideoDevice lockForConfiguration:&error] ) {
         AVCaptureWhiteBalanceGains normalizedGains = [self normalizedGains:gains]; // Conversion can yield out-of-bound values, cap to limits
         [currentVideoDevice setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains:normalizedGains completionHandler:nil];
@@ -462,9 +462,9 @@ static const float kExposureDurationPower = 5;
     g.greenGain = MAX( 1.0, g.greenGain );
     g.blueGain = MAX( 1.0, g.blueGain );
     
-    g.redGain = MIN( videoInput.device.maxWhiteBalanceGain, g.redGain );
-    g.greenGain = MIN( videoInput.device.maxWhiteBalanceGain, g.greenGain );
-    g.blueGain = MIN( videoInput.device.maxWhiteBalanceGain, g.blueGain );
+    g.redGain = MIN( self.camera.inputCamera.maxWhiteBalanceGain, g.redGain );
+    g.greenGain = MIN( self.camera.inputCamera.maxWhiteBalanceGain, g.greenGain );
+    g.blueGain = MIN( self.camera.inputCamera.maxWhiteBalanceGain, g.blueGain );
     
     return g;
 }
@@ -496,7 +496,7 @@ static const float kExposureDurationPower = 5;
         NSLog( @"Could not create video device input: %@", error );
     }
     
-    [self.captureSession beginConfiguration];
+    [self.camera.captureSession beginConfiguration];
     
     NSString *sessionPreset = nil;
     
@@ -518,9 +518,9 @@ static const float kExposureDurationPower = 5;
             sessionPreset = AVCaptureSessionPresetHigh;
             break;
     }
-    if ([self.captureSession canSetSessionPreset:sessionPreset])
+    if ([self.camera.captureSession canSetSessionPreset:sessionPreset])
     {
-        self.captureSession.sessionPreset = sessionPreset;
+        self.camera.captureSession.sessionPreset = sessionPreset;
         
         // 2.偏好设置保存选中的分辨率
         [[NSUserDefaults standardUserDefaults] setInteger:tag forKey:@"imageViewSeleted"];
@@ -531,12 +531,12 @@ static const float kExposureDurationPower = 5;
     }
     
     
-    if ( [self.captureSession canAddInput:videoDeviceInput] ) {
-        [self.captureSession addInput:videoDeviceInput];
-        videoInput = videoDeviceInput;
+    if ( [self.camera.captureSession canAddInput:videoDeviceInput] ) {
+        [self.camera.captureSession addInput:videoDeviceInput];
+        self.camera.deviceInput = videoDeviceInput;
     }
     
-    [self.captureSession commitConfiguration];
+    [self.camera.captureSession commitConfiguration];
     //    });
 }
 
@@ -560,7 +560,7 @@ static const float kExposureDurationPower = 5;
 - (void)videoCameraWithExposureTime:(CGFloat)time andIso:(CGFloat)iso
 {
     NSError *error = nil;
-    AVCaptureDevice *currentVideoDevice = videoInput.device;
+    AVCaptureDevice *currentVideoDevice = self.camera.inputCamera;
     
     [currentVideoDevice lockForConfiguration:&error];
     

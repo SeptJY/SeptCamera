@@ -185,6 +185,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	// Add the video input	
 	NSError *error = nil;
 	videoInput = [[AVCaptureDeviceInput alloc] initWithDevice:_inputCamera error:&error];
+    self.deviceInput = videoInput;
 	if ([_captureSession canAddInput:videoInput]) 
 	{
 		[_captureSession addInput:videoInput];
@@ -937,6 +938,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
+    
     if (!self.captureSession.isRunning)
     {
         return;

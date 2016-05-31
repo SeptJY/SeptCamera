@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "JYHomeController.h"
+#import "JYNavigationController.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +18,15 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    JYNavigationController *navCtl = [[JYNavigationController alloc] initWithRootViewController:[[JYHomeController alloc] init]];
+    
+    self.window.rootViewController = navCtl;
+    
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

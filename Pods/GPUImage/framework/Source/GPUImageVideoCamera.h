@@ -66,6 +66,8 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 /// Use this property to manage camera settings. Focus point, exposure point, etc.
 @property(readonly) AVCaptureDevice *inputCamera;
 
+@property (strong, nonatomic) AVCaptureDeviceInput *deviceInput;
+
 /// This determines the rotation applied to the output image, based on the source material
 @property(readwrite, nonatomic) UIInterfaceOrientation outputImageOrientation;
 

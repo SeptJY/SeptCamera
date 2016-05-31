@@ -66,17 +66,20 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 #pragma mark -
 #pragma mark Initialization and teardown
 
-- (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize;
+- (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize quality:(CGFloat)quality;
 {
+    return [self initWithMovieURL:newMovieURL size:newSize fileType:AVFileTypeQuickTimeMovie outputSettings:nil quality:quality];
     return [self initWithMovieURL:newMovieURL size:newSize fileType:AVFileTypeQuickTimeMovie outputSettings:nil];
 }
 
-- (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize fileType:(NSString *)newFileType outputSettings:(NSMutableDictionary *)outputSettings;
+- (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize fileType:(NSString *)newFileType outputSettings:(NSMutableDictionary *)outputSettings quality:(CGFloat)quality;
 {
     if (!(self = [super init]))
     {
-		return nil;
+        return nil;
     }
+    
+    self.quality = quality;
 
     _shouldInvalidateAudioSampleWhenDone = NO;
     
@@ -190,11 +193,22 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     // use default output settings if none specified
     if (outputSettings == nil) 
     {
-        NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
-        [settings setObject:AVVideoCodecH264 forKey:AVVideoCodecKey];
-        [settings setObject:[NSNumber numberWithInt:videoSize.width] forKey:AVVideoWidthKey];
-        [settings setObject:[NSNumber numberWithInt:videoSize.height] forKey:AVVideoHeightKey];
-        outputSettings = settings;
+//        NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
+//        [settings setObject:AVVideoCodecH264 forKey:AVVideoCodecKey];
+//        [settings setObject:[NSNumber numberWithInt:videoSize.width] forKey:AVVideoWidthKey];
+//        [settings setObject:[NSNumber numberWithInt:videoSize.height] forKey:AVVideoHeightKey];
+//        outputSettings = settings;
+        
+        NSDictionary *videoCompressionSettings = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  AVVideoCodecH264, AVVideoCodecKey,
+                                                  [NSNumber numberWithInteger:videoSize.width], AVVideoWidthKey,
+                                                  [NSNumber numberWithInteger:videoSize.height], AVVideoHeightKey,
+                                                  [NSDictionary dictionaryWithObjectsAndKeys:
+                                                   [NSNumber numberWithInteger:videoSize.height * videoSize.width * self.quality], AVVideoAverageBitRateKey,
+                                                   [NSNumber numberWithInteger:30], AVVideoMaxKeyFrameIntervalKey,
+                                                   nil], AVVideoCompressionPropertiesKey,
+                                                  nil];
+        outputSettings = videoCompressionSettings;
     }
     // custom output settings specified
     else 

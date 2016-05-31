@@ -64,4 +64,8 @@ extern NSString *const kGPUImageColorSwizzlingFragmentShaderString;
 - (void)processAudioBuffer:(CMSampleBufferRef)audioBuffer;
 - (void)enableSynchronizationCallbacks;
 
+@property (assign, nonatomic) CGFloat quality;
+
+- (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize quality:(CGFloat)quality;
+
 @end

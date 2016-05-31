@@ -14,6 +14,8 @@
 #import "JYButtonCell.h"
 #import "JYWhiteBalanceView.h"
 #import "JYExposureView.h"
+#import "MJExtension.h"
+#import "JYSettings.h"
 
 @interface JYContentView () <UITableViewDelegate, UITableViewDataSource, JYThreeButtonDelegate>
 
@@ -104,6 +106,45 @@
     self.titleSmallArray = changSmallArray;
     
     [self.tableView reloadData];
+}
+
+- (NSMutableArray *)titleArray1
+{
+    if (!_titleArray) {
+        _titleArray = [NSMutableArray array];
+        
+        // 获取工程中创建的plist数据
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"SettingData.plist" ofType:nil];
+        NSMutableArray *mArr = [NSMutableArray arrayWithContentsOfFile:path];
+        
+        // 获取手动创建的data数据
+        NSArray *sandboxpath= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        //获取完整路径
+        NSString *documentsDirectory = [sandboxpath objectAtIndex:0];
+        NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"data.plist"];
+        
+        // 判断data.plist文件是否存在
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
+        if (dict == nil) {
+            // 创建data.plist
+            NSFileManager* fm = [NSFileManager defaultManager];
+            [fm createFileAtPath:plistPath contents:nil attributes:nil];
+            
+            // 把工程中创建的plist数据写入到手动创建的data.plist文件中
+            [mArr writeToFile:plistPath atomically:YES];
+        }
+        
+        NSMutableArray *arr = [NSMutableArray arrayWithContentsOfFile:plistPath];
+        
+        NSMutableArray *mSettings = [NSMutableArray array];
+        for (NSMutableDictionary *dict in arr) {
+            JYSettings *mSet = [JYSettings mj_objectWithKeyValues:dict];
+            
+            [mSettings addObject:mSet];
+        }
+        _titleArray = mSettings;
+    }
+    return _titleArray;
 }
 
 - (UITableView *)tableView
@@ -202,6 +243,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"%ld", (long)indexPath.row);
     switch (indexPath.section) {
         case 0:
         {

@@ -97,6 +97,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	AVCaptureDeviceInput *audioInput;
 	AVCaptureAudioDataOutput *audioOutput;
     NSDate *startingCaptureTime;
+    CMTime defaultVideoMaxFrameDuration;
 	
     dispatch_queue_t cameraProcessingQueue, audioProcessingQueue;
     
@@ -112,6 +113,8 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     
     BOOL addedAudioInputsDueToEncodingTarget;
 }
+
+@property (nonatomic, strong) AVCaptureDeviceFormat *defaultFormat;
 
 - (void)updateOrientationSendToTargets;
 - (void)convertYUVToRGBOutput;
@@ -478,6 +481,8 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     }
     
     _inputCamera = backFacingCamera;
+    self.defaultFormat = _inputCamera.activeFormat;
+    defaultVideoMaxFrameDuration = _inputCamera.activeVideoMaxFrameDuration;
     [self setOutputImageOrientation:_outputImageOrientation];
 }
 
@@ -532,6 +537,68 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	[_captureSession commitConfiguration];
 }
 
+- (void)resetFormat {
+    
+    BOOL isRunning = self.captureSession.isRunning;
+    
+    if (isRunning) {
+        [self.captureSession stopRunning];
+    }
+    
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    [videoDevice lockForConfiguration:nil];
+    videoDevice.activeFormat = self.defaultFormat;
+    videoDevice.activeVideoMaxFrameDuration = defaultVideoMaxFrameDuration;
+    [videoDevice unlockForConfiguration];
+    
+    if (isRunning) {
+        [self.captureSession startRunning];
+    }
+}
+
+- (void)switchFormatWithDesiredFPS:(CGFloat)desiredFPS
+{
+    BOOL isRunning = self.captureSession.isRunning;
+    
+    if (isRunning)  [self.captureSession stopRunning];
+    
+//    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDeviceFormat *selectedFormat = nil;
+    int32_t maxWidth = 0;
+    AVFrameRateRange *frameRateRange = nil;
+    
+    for (AVCaptureDeviceFormat *format in [_inputCamera formats]) {
+        
+        for (AVFrameRateRange *range in format.videoSupportedFrameRateRanges) {
+            
+            CMFormatDescriptionRef desc = format.formatDescription;
+            CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
+            int32_t width = dimensions.width;
+            
+            if (range.minFrameRate <= desiredFPS && desiredFPS <= range.maxFrameRate && width >= maxWidth) {
+                
+                selectedFormat = format;
+                frameRateRange = range;
+                maxWidth = width;
+            }
+        }
+    }
+    
+    if (selectedFormat) {
+        
+        if ([_inputCamera lockForConfiguration:nil]) {
+            
+            NSLog(@"selected format:%@", selectedFormat);
+            _inputCamera.activeFormat = selectedFormat;
+            _inputCamera.activeVideoMinFrameDuration = CMTimeMake(1, (int32_t)desiredFPS);
+            _inputCamera.activeVideoMaxFrameDuration = CMTimeMake(1, (int32_t)desiredFPS);
+            [_inputCamera unlockForConfiguration];
+        }
+    }
+    
+    if (isRunning) [_captureSession startRunning];
+}
+
 - (void)setFrameRate:(int32_t)frameRate;
 {
 	_frameRate = frameRate;
@@ -544,10 +611,11 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
             NSError *error;
             [_inputCamera lockForConfiguration:&error];
             if (error == nil) {
-#if defined(__IPHONE_7_0)
+//#if defined(__IPHONE_7_0)
+                NSLog(@"%f, %d", _frameRate, _inputCamera.activeVideoMaxFrameDuration);
                 [_inputCamera setActiveVideoMinFrameDuration:CMTimeMake(1, _frameRate)];
                 [_inputCamera setActiveVideoMaxFrameDuration:CMTimeMake(1, _frameRate)];
-#endif
+//#endif
             }
             [_inputCamera unlockForConfiguration];
             

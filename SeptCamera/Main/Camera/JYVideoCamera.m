@@ -13,6 +13,7 @@
     CMTime defaultVideoMaxFrameDuration;
     dispatch_queue_t movieWritingQueue;
     CMBufferQueueRef previewBufferQueue;
+    NSArray *_bracketSettings;
 }
 
 @property (nonatomic, strong) AVAssetWriter *assetWriter;
@@ -26,6 +27,8 @@
 @property (strong, nonatomic) UIView *superView;
 
 @property (nonatomic, strong) AVCaptureDeviceFormat *defaultFormat;
+
+
 
 @end
 
@@ -43,31 +46,7 @@
         
         self.quality = ([[NSUserDefaults standardUserDefaults] floatForKey:@"CodingQuality"] == 0) ? 5.0f : [[NSUserDefaults standardUserDefaults] floatForKey:@"CodingQuality"];
         
-//        AVCaptureVideoDataOutput *videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
-//        [self.videoCamera.captureSession addOutput:videoDataOutput];
-//        
-//        [videoDataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
-//        
-//        movieWritingQueue = dispatch_queue_create("com.shu223.moviewriting", DISPATCH_QUEUE_SERIAL);
-//        dispatch_queue_t videoCaptureQueue = dispatch_queue_create("com.shu223.videocapture", NULL);
-//        [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES];
-//        [videoDataOutput setSampleBufferDelegate:self queue:videoCaptureQueue];
-//        
-//        self.videoConnection = [videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
-//        
-//        // Audio
-//        AVCaptureAudioDataOutput *audioDataOutput = [[AVCaptureAudioDataOutput alloc] init];
-//        [self.videoCamera.captureSession addOutput:audioDataOutput];
-//        
-//        dispatch_queue_t audioCaptureQueue = dispatch_queue_create("com.shu223.audiocapture", DISPATCH_QUEUE_SERIAL);
-//        [audioDataOutput setSampleBufferDelegate:self queue:audioCaptureQueue];
-//        
-//        self.audioConnection = [audioDataOutput connectionWithMediaType:AVMediaTypeAudio];
-//        
-//        
-//        // BufferQueue
-//        OSStatus err = CMBufferQueueCreate(kCFAllocatorDefault, 1, CMBufferQueueGetCallbacksForUnsortedSampleBuffers(), &previewBufferQueue);
-//        NSLog(@"CMBufferQueueCreate error:%d", err);
+        self.imgsArray = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -122,16 +101,77 @@
         }
 }
 
+- (void)prepareBracketsWith:(NSInteger)index
+{
+    switch (index) {
+        case 0:
+            
+            break;
+        case 1:
+            
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)takePhotosWithHDR
+{
+    [self.videoCamera startBracketsCompletionHandler:^(UIImage *image) {
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+    }];
+}
+
+- (void)prepareHDRWithIndex:(NSInteger)index
+{
+    [self.videoCamera prepareBracketsWithIndex:index];
+}
+
 - (void)takePhoto
 {
     [self.videoCamera capturePhotoAsImageProcessedUpToFilter:self.filter withOrientation:UIImageOrientationUp withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+        
         UIImageWriteToSavedPhotosAlbum(processedImage, nil, nil, nil);
         
         if (self.delegate && [self.delegate respondsToSelector:@selector(cameraManageTakingPhotoSucuess:)]) {
             [self.delegate cameraManageTakingPhotoSucuess:processedImage];
         }
     }];
-    
+}
+
+- (void)setFrameRate:(int32_t)frameRate
+{
+    self.videoCamera.frameRate = frameRate;
+}
+
+- (void)resetFormats
+{
+    [self.videoCamera resetFormat];
+}
+
+- (void)aswitchFormatWithDesiredFPS:(CGFloat)desiredFPS
+{
+    [self.videoCamera switchFormatWithDesiredFPS:desiredFPS];
+}
+
+- (void)takePhotoWithArray
+{
+    [self.videoCamera capturePhotoAsImageProcessedUpToFilter:self.filter withOrientation:UIImageOrientationUp withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+        
+//        UIImageWriteToSavedPhotosAlbum(processedImage, nil, nil, nil);
+        NSLog(@"%@", processedImage);
+        if (processedImage) {
+            [self.imgsArray addObject:processedImage];
+        }
+//        if (self.delegate && [self.delegate respondsToSelector:@selector(cameraManageTakingPhotoSucuessArray:)]) {
+//            [self.delegate cameraManageTakingPhotoSucuessArray:self.imgsArray];
+//        }
+        
+//        if (self.delegate && [self.delegate respondsToSelector:@selector(cameraManageTakingPhotoSucuess:)]) {
+//            [self.delegate cameraManageTakingPhotoSucuess:processedImage];
+//        }
+    }];
 }
 
 - (void)startVideo

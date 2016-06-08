@@ -16,6 +16,8 @@
 
 - (void)cameraManageTakingPhotoSucuess:(UIImage *)image;
 
+- (void)cameraManageTakingPhotoSucuessArray:(NSMutableArray *)images;
+
 - (void)videoCameraDidOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer;
 
 @end
@@ -46,6 +48,8 @@ typedef void(^CanSetSessionPreset)(BOOL isCan);
 - (instancetype)initWithSessionPreset:(NSString *)sessionPreset superView:(UIView *)superView;
 
 @property (assign, nonatomic) CGSize videoSize;
+
+@property (assign, nonatomic) int32_t frameRate;
 
 - (void)startVideo;
 - (void)stopVideo;
@@ -84,5 +88,17 @@ typedef void(^CanSetSessionPreset)(BOOL isCan);
 - (void)switchFormatWithDesiredFPS:(CGFloat)desiredFPS;
 
 - (void)takePhoto;
+
+- (void)takePhotosWithHDR;
+
+- (void)prepareHDRWithIndex:(NSInteger)index;
+
+- (void)takePhotoWithArray;
+
+- (void)resetFormats;
+
+- (void)aswitchFormatWithDesiredFPS:(CGFloat)desiredFPS;
+
+@property (strong, nonatomic) NSMutableArray *imgsArray;
 
 @end

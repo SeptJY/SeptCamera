@@ -79,4 +79,6 @@ typedef void(^JYLableText)(NSString *text);
 
 - (void)resetFormat;
 
+- (void)HDR;
+
 @end

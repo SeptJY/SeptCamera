@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class JYSettings;
 @interface JYContentDirection : UITableViewCell
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
 @property (copy, nonatomic) NSString *bigTitle;
 @property (copy, nonatomic) NSString *smallTitle;
+
+@property (strong, nonatomic) JYSettings *setting;
 
 @end

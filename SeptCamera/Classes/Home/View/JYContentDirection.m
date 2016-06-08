@@ -7,6 +7,7 @@
 //
 
 #import "JYContentDirection.h"
+#import "JYSettings.h"
 
 @interface JYContentDirection ()
 
@@ -46,6 +47,14 @@
     _smallTitle = smallTitle;
     
     self.smallLabel.text = smallTitle;
+}
+
+- (void)setSetting:(JYSettings *)setting
+{
+    _setting = setting;
+    
+    self.titleLabel.text = setting.title;
+    self.smallLabel.text = setting.subTitle;
 }
 
 @end

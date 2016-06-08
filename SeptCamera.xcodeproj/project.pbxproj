@@ -15,6 +15,7 @@
 		5B30E22A1CEAB1ED00906281 /* SeptCameraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B30E2291CEAB1ED00906281 /* SeptCameraTests.m */; };
 		5B30E2351CEAB1ED00906281 /* SeptCameraUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B30E2341CEAB1ED00906281 /* SeptCameraUITests.m */; };
 		5B3239021CFC46540066F2B7 /* JYSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3239011CFC46540066F2B7 /* JYSettings.m */; };
+		5B36146A1CFE96AB00A79517 /* JYSeletcedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3614691CFE96AB00A79517 /* JYSeletcedView.m */; };
 		5B3BF52E1CEABED700EFBD58 /* JYHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF51F1CEABED700EFBD58 /* JYHomeController.m */; };
 		5B3BF5311CEABEF100EFBD58 /* JYCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF5301CEABEF100EFBD58 /* JYCameraManager.m */; };
 		5B3BF5381CEAC05F00EFBD58 /* JYNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF5371CEAC05F00EFBD58 /* JYNavigationController.m */; };
@@ -43,6 +44,9 @@
 		5B8664AF1CEDB5F60081FA95 /* JYContentDirection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5B8664AD1CEDB5F60081FA95 /* JYContentDirection.xib */; };
 		5B8664B21CEDC3A90081FA95 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5B8664B41CEDC3A90081FA95 /* Localizable.strings */; };
 		5B869A671CFD246B0070B08A /* JYRulesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B869A661CFD246B0070B08A /* JYRulesView.m */; };
+		5B869A6C1CFD286D0070B08A /* JYVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B869A6B1CFD286D0070B08A /* JYVideoView.m */; };
+		5B869A6E1CFD9AED0070B08A /* photoShutter2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5B869A6D1CFD9AED0070B08A /* photoShutter2.caf */; };
+		5B931F341D0521D00076E942 /* AAPLStripedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B931F331D0521D00076E942 /* AAPLStripedImage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +85,8 @@
 		5B30E2361CEAB1ED00906281 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5B3239001CFC46540066F2B7 /* JYSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYSettings.h; sourceTree = "<group>"; };
 		5B3239011CFC46540066F2B7 /* JYSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYSettings.m; sourceTree = "<group>"; };
+		5B3614681CFE96AA00A79517 /* JYSeletcedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYSeletcedView.h; sourceTree = "<group>"; };
+		5B3614691CFE96AB00A79517 /* JYSeletcedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYSeletcedView.m; sourceTree = "<group>"; };
 		5B3BF51E1CEABED700EFBD58 /* JYHomeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYHomeController.h; sourceTree = "<group>"; };
 		5B3BF51F1CEABED700EFBD58 /* JYHomeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYHomeController.m; sourceTree = "<group>"; };
 		5B3BF52F1CEABEF100EFBD58 /* JYCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYCameraManager.h; sourceTree = "<group>"; };
@@ -133,6 +139,12 @@
 		5B8664B61CEDC3B40081FA95 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5B869A651CFD246B0070B08A /* JYRulesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYRulesView.h; sourceTree = "<group>"; };
 		5B869A661CFD246B0070B08A /* JYRulesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYRulesView.m; sourceTree = "<group>"; };
+		5B869A6A1CFD286D0070B08A /* JYVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYVideoView.h; sourceTree = "<group>"; };
+		5B869A6B1CFD286D0070B08A /* JYVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYVideoView.m; sourceTree = "<group>"; };
+		5B869A6D1CFD9AED0070B08A /* photoShutter2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = photoShutter2.caf; sourceTree = "<group>"; };
+		5B931F321D0521D00076E942 /* AAPLStripedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLStripedImage.h; sourceTree = "<group>"; };
+		5B931F331D0521D00076E942 /* AAPLStripedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLStripedImage.m; sourceTree = "<group>"; };
+		5B931F351D0525930076E942 /* AAPLMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMacros.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,6 +226,7 @@
 				5B8664B41CEDC3A90081FA95 /* Localizable.strings */,
 				5B79C14A1CF403DF00092C53 /* PrefixHeader.pch */,
 				5B861E131CF5AE150057837F /* SettingData.plist */,
+				5B869A6D1CFD9AED0070B08A /* photoShutter2.caf */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -294,6 +307,10 @@
 				5B79C1671CF459B900092C53 /* DWBubbleMenuButton.m */,
 				5B869A651CFD246B0070B08A /* JYRulesView.h */,
 				5B869A661CFD246B0070B08A /* JYRulesView.m */,
+				5B869A6A1CFD286D0070B08A /* JYVideoView.h */,
+				5B869A6B1CFD286D0070B08A /* JYVideoView.m */,
+				5B3614681CFE96AA00A79517 /* JYSeletcedView.h */,
+				5B3614691CFE96AB00A79517 /* JYSeletcedView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -390,6 +407,7 @@
 		5B3BF52D1CEABED700EFBD58 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				5B931F311D0521C70076E942 /* HDR */,
 				5B79C1451CF3DF3000092C53 /* Language */,
 				5B3BF5351CEAC05500EFBD58 /* Categor */,
 				5B3BF5341CEAC04A00EFBD58 /* Base */,
@@ -448,6 +466,16 @@
 				5B79C1601CF4369600092C53 /* JYBanlanceBtn.xib */,
 			);
 			name = Cell;
+			sourceTree = "<group>";
+		};
+		5B931F311D0521C70076E942 /* HDR */ = {
+			isa = PBXGroup;
+			children = (
+				5B931F351D0525930076E942 /* AAPLMacros.h */,
+				5B931F321D0521D00076E942 /* AAPLStripedImage.h */,
+				5B931F331D0521D00076E942 /* AAPLStripedImage.m */,
+			);
+			path = HDR;
 			sourceTree = "<group>";
 		};
 		AF32CF4992B8C5FC5403A5D4 /* Pods */ = {
@@ -567,6 +595,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B869A6E1CFD9AED0070B08A /* photoShutter2.caf in Resources */,
 				5B79C1591CF4323F00092C53 /* JYButtonCell.xib in Resources */,
 				5B8664B21CEDC3A90081FA95 /* Localizable.strings in Resources */,
 				5B79C1621CF4369600092C53 /* JYBanlanceBtn.xib in Resources */,
@@ -662,6 +691,7 @@
 				5B3BF53B1CEB030900EFBD58 /* JYLeftTopViewMasnory.m in Sources */,
 				5B8664AE1CEDB5F60081FA95 /* JYContentDirection.m in Sources */,
 				5B79C14E1CF405B000092C53 /* JYContentSwitch.m in Sources */,
+				5B931F341D0521D00076E942 /* AAPLStripedImage.m in Sources */,
 				5B79C1531CF42BA500092C53 /* JYCustomSlider.m in Sources */,
 				5B79C15D1CF4351500092C53 /* JYWhiteBalanceView.m in Sources */,
 				5B821D2F1CF936F70036D69F /* JYVideoCamera.m in Sources */,
@@ -669,8 +699,10 @@
 				5B79C1681CF459B900092C53 /* DWBubbleMenuButton.m in Sources */,
 				5B3BF5381CEAC05F00EFBD58 /* JYNavigationController.m in Sources */,
 				5B861E121CF58E620057837F /* JYLeftTopView.m in Sources */,
+				5B869A6C1CFD286D0070B08A /* JYVideoView.m in Sources */,
 				5B79C1651CF44DD200092C53 /* JYExposureView.m in Sources */,
 				5B3BF52E1CEABED700EFBD58 /* JYHomeController.m in Sources */,
+				5B36146A1CFE96AB00A79517 /* JYSeletcedView.m in Sources */,
 				5B3BF5311CEABEF100EFBD58 /* JYCameraManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

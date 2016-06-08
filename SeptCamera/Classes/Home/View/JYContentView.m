@@ -16,6 +16,7 @@
 #import "JYExposureView.h"
 #import "MJExtension.h"
 #import "JYSettings.h"
+#import "JYSeletcedView.h"
 
 @interface JYContentView () <UITableViewDelegate, UITableViewDataSource, JYThreeButtonDelegate>
 
@@ -23,95 +24,59 @@
 
 @property (strong, nonatomic) UITableView *tableView;
 
-// bigLable的title
-@property (strong, nonatomic) NSArray *languages;
-@property (strong, nonatomic) NSMutableArray *titleArray;
-
-// smallLable的title
-@property (strong, nonatomic) NSArray *languageSmall;
-@property (strong, nonatomic) NSMutableArray *titleSmallArray;
+@property (strong, nonatomic) NSMutableArray *settingsArray;
+@property (strong, nonatomic) NSMutableArray *changeArray;
 
 @property (strong, nonatomic) JYWhiteBalanceView *whiteView;
 @property (strong, nonatomic) JYExposureView *exposureView;
+
+@property (strong, nonatomic) JYSeletcedView *selView;
 
 @end
 
 @implementation JYContentView
 
-- (void)awakeFromNib
+- (instancetype)init
 {
-    [self addSubview:self.threeBtn];
-    [self addSubview:self.whiteView];
-    [self addSubview:self.exposureView];
-    
-    [self setupConstraints];
-    
-    [self.tableView registerNib:[UINib nibWithNibName:@"JYContentDirection" bundle:nil] forCellReuseIdentifier:@"direction"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"JYContentSwitch" bundle:nil] forCellReuseIdentifier:@"switch"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"JYCustomSlider" bundle:nil] forCellReuseIdentifier:@"slider"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"JYButtonCell" bundle:nil] forCellReuseIdentifier:@"button"];
-    
-    self.languages = @[@"蓝牙", @"分辨率", @"帧率", @"视频编码质量", @"语言", @"自动重复", @"附加镜头", @"硬件支持", @"闪光灯", @"前置提示灯", @"九宫格", @"对比度", @"恢复默认设置"];
-    self.languageSmall = @[@"未连接", @"1920x1080", @"30fps", @"标准", @"简体中文", @"两点", @"无镜头", @"", @"自动"];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeLanguage) name:@"changeLanguage" object:nil];
-}
-
-- (NSMutableArray *)titleArray
-{
-    if (!_titleArray) {
+    self = [super init];
+    if (self) {
         
-        _titleArray = [[NSMutableArray alloc] init];
+        [self addSubview:self.threeBtn];
+        [self addSubview:self.whiteView];
+        [self addSubview:self.exposureView];
         
-        // 为了解决第一次运行软件的时候出现中英文混乱
-        for (NSString *str in self.languages) {
-            [_titleArray addObject:NSLocalizedString(str, nil)];
-        }
+        [self setupConstraints];
+        
+        [self.tableView registerNib:[UINib nibWithNibName:@"JYContentDirection" bundle:nil] forCellReuseIdentifier:@"direction"];
+        [self.tableView registerNib:[UINib nibWithNibName:@"JYContentSwitch" bundle:nil] forCellReuseIdentifier:@"switch"];
+        [self.tableView registerNib:[UINib nibWithNibName:@"JYCustomSlider" bundle:nil] forCellReuseIdentifier:@"slider"];
+        [self.tableView registerNib:[UINib nibWithNibName:@"JYButtonCell" bundle:nil] forCellReuseIdentifier:@"button"];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeLanguage) name:@"changeLanguage" object:nil];
     }
-    return _titleArray;
-}
-
-- (NSMutableArray *)titleSmallArray
-{
-    if (!_titleSmallArray) {
-        
-        _titleSmallArray = [[NSMutableArray alloc] init];
-        
-        // 为了解决第一次运行软件的时候出现中英文混乱
-        for (NSString *str in self.languageSmall) {
-            [_titleSmallArray addObject:NSLocalizedString(str, nil)];
-        }
-    }
-    return _titleSmallArray;
+    return self;
 }
 
 - (void)changeLanguage
 {
-    // 1.创建两个临时变量
     NSMutableArray *changArray = [NSMutableArray array];
-    NSMutableArray *changSmallArray = [NSMutableArray array];
-    
-    // 2.遍历数组，转换成所需要的语言
-    for (NSString *str in self.languages) {
-        NSString *mStr = [[JYLanguageTool bundle] localizedStringForKey:str value:nil table:@"Localizable"];
-        [changArray addObject:mStr];
+    for (JYSettings *setting in self.settingsArray) {
+        JYSettings *mSet = [[JYSettings alloc] init];
+        
+        mSet.title = [[JYLanguageTool bundle] localizedStringForKey:setting.title value:nil table:@"Localizable"];
+        mSet.subTitle = [[JYLanguageTool bundle] localizedStringForKey:setting.subTitle value:nil table:@"Localizable"];
+        
+        [changArray addObject:mSet];
     }
-    // 3.赋值原来的数组
-    self.titleArray = changArray;
-    
-    for (NSString *str in self.languageSmall) {
-        NSString *mStr = [[JYLanguageTool bundle] localizedStringForKey:str value:nil table:@"Localizable"];
-        [changSmallArray addObject:mStr];
-    }
-    self.titleSmallArray = changSmallArray;
+    self.changeArray = changArray;
     
     [self.tableView reloadData];
 }
 
-- (NSMutableArray *)titleArray1
+- (NSMutableArray *)settingsArray
 {
-    if (!_titleArray) {
-        _titleArray = [NSMutableArray array];
+    if (!_settingsArray) {
+        _settingsArray = [NSMutableArray array];
         
         // 获取工程中创建的plist数据
         NSString *path = [[NSBundle mainBundle] pathForResource:@"SettingData.plist" ofType:nil];
@@ -142,9 +107,32 @@
             
             [mSettings addObject:mSet];
         }
-        _titleArray = mSettings;
+        _settingsArray = mSettings;
     }
-    return _titleArray;
+    return _settingsArray;
+}
+
+- (NSMutableArray *)changeArray
+{
+    if (!_changeArray) {
+        _changeArray = [NSMutableArray array];
+        
+        _changeArray = self.settingsArray;
+    }
+    return _changeArray;
+}
+
+- (JYSeletcedView *)selView
+{
+    if (!_selView) {
+        
+        _selView = [[JYSeletcedView alloc] init];
+        _selView.backgroundColor = [UIColor clearColor];
+        _selView.hidden = YES;
+        
+        [self addSubview:_selView];
+    }
+    return _selView;
 }
 
 - (UITableView *)tableView
@@ -232,7 +220,7 @@
 {
     switch (section) {
         case 0:
-            return self.titleSmallArray.count;
+            return 9;
         case 1:
             return 2;
             
@@ -243,38 +231,47 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"%ld", (long)indexPath.row);
     switch (indexPath.section) {
         case 0:
         {
+            JYSettings *setting = self.changeArray[indexPath.row];
+            
             JYContentDirection *cell = [JYContentDirection cellWithTableView:tableView];
             cell.backgroundColor = [UIColor clearColor];
-            cell.bigTitle = self.titleArray[indexPath.row];
-            cell.smallTitle = self.titleSmallArray[indexPath.row];
+//            cell.bigTitle = self.titleArray[indexPath.row];
+//            cell.smallTitle = self.titleSmallArray[indexPath.row];
+            cell.setting = setting;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
             return cell;
         }
         case 1:
         {
+            JYSettings *setting = self.changeArray[indexPath.row + 9];
             JYContentSwitch *cell = [JYContentSwitch cellWithTableView:tableView];
             cell.backgroundColor = [UIColor clearColor];
-            cell.title = self.titleArray[self.titleSmallArray.count + indexPath.row];
+            cell.title = setting.title;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
             return cell;
         }
         case 2:
         {
+            JYSettings *setting = self.changeArray[indexPath.row + 9 + 2];
             JYCustomSlider *cell = [JYCustomSlider cellWithTableView:tableView];
             cell.backgroundColor = [UIColor clearColor];
-            cell.title = self.titleArray[self.titleSmallArray.count + 2 + indexPath.row];
+            cell.title = setting.title;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
             return cell;
         }
         case 3:
         {
+            JYSettings *setting = [self.changeArray lastObject];
             JYButtonCell *cell = [JYButtonCell cellWithTableView:tableView];
             cell.backgroundColor = [UIColor clearColor];
-            cell.title = self.titleArray.lastObject;
+            cell.title = setting.title;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
             return cell;
         }
@@ -284,6 +281,11 @@
             return cell;
         }
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"%ld", (long)indexPath.row);
 }
 
 - (void)setupConstraints
@@ -310,6 +312,10 @@
     }];
     
     [self.exposureView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.bottom.trailing.mas_equalTo(weakSelf.whiteView);
+    }];
+    
+    [self.selView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.bottom.trailing.mas_equalTo(weakSelf.whiteView);
     }];
 }

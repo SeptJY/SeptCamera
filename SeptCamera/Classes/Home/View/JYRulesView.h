@@ -10,4 +10,8 @@
 
 @interface JYRulesView : UIView
 
++ (instancetype)rulesView;
+
+- (void)animationWith:(CGFloat)value index:(NSInteger)index;
+
 @end

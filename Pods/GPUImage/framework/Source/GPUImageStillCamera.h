@@ -3,6 +3,8 @@
 void stillImageDataReleaseCallback(void *releaseRefCon, const void *baseAddress);
 void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize finalSize, CMSampleBufferRef *sampleBuffer);
 
+typedef void(^AAPLCompletionWithImage)(UIImage *image);
+
 @interface GPUImageStillCamera : GPUImageVideoCamera
 
 /** The JPEG compression quality to use when capturing a photo as a JPEG.
@@ -20,7 +22,9 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
 - (void)capturePhotoAsJPEGProcessedUpToFilter:(GPUImageOutput<GPUImageInput> *)finalFilterInChain withOrientation:(UIImageOrientation)orientation withCompletionHandler:(void (^)(NSData *processedJPEG, NSError *error))block;
 - (void)capturePhotoAsPNGProcessedUpToFilter:(GPUImageOutput<GPUImageInput> *)finalFilterInChain withCompletionHandler:(void (^)(NSData *processedPNG, NSError *error))block;
 - (void)capturePhotoAsPNGProcessedUpToFilter:(GPUImageOutput<GPUImageInput> *)finalFilterInChain withOrientation:(UIImageOrientation)orientation withCompletionHandler:(void (^)(NSData *processedPNG, NSError *error))block;
+- (void)captureStillImageBracketAsynchronouslyFromConnection:(GPUImageOutput<GPUImageInput> *)finalFilterInChain withCompletionHandler:(void (^)(UIImage *processedImage, NSError *error))block;
 
-@property (strong, nonatomic) NSTimer *timer;
+- (void)startBracketsCompletionHandler:(AAPLCompletionWithImage)completion;
+- (void)prepareBracketsWithIndex:(NSInteger)index;
 
 @end

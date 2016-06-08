@@ -38,7 +38,7 @@
 
 + (UIImage *)getImage:(NSURL *)videoURL;
 
-+ (UIImage *)imageFromSampleBuffer:(CMSampleBufferRef)sampleBuffer;
++  (UIImage *) imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer;
 
 
 @end

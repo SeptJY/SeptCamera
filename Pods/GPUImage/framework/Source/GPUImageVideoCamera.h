@@ -153,4 +153,8 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 + (BOOL)isBackFacingCameraPresent;
 + (BOOL)isFrontFacingCameraPresent;
 
+- (void)resetFormat;
+
+- (void)switchFormatWithDesiredFPS:(CGFloat)desiredFPS;
+
 @end

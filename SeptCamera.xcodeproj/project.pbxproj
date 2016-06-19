@@ -17,7 +17,6 @@
 		5B3239021CFC46540066F2B7 /* JYSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3239011CFC46540066F2B7 /* JYSettings.m */; };
 		5B36146A1CFE96AB00A79517 /* JYSeletcedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3614691CFE96AB00A79517 /* JYSeletcedView.m */; };
 		5B3BF52E1CEABED700EFBD58 /* JYHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF51F1CEABED700EFBD58 /* JYHomeController.m */; };
-		5B3BF5311CEABEF100EFBD58 /* JYCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF5301CEABEF100EFBD58 /* JYCameraManager.m */; };
 		5B3BF5381CEAC05F00EFBD58 /* JYNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF5371CEAC05F00EFBD58 /* JYNavigationController.m */; };
 		5B3BF53B1CEB030900EFBD58 /* JYLeftTopViewMasnory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3BF53A1CEB030900EFBD58 /* JYLeftTopViewMasnory.m */; };
 		5B79C1481CF3DF3000092C53 /* JYLanguageTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B79C1471CF3DF3000092C53 /* JYLanguageTool.m */; };
@@ -32,6 +31,8 @@
 		5B79C1621CF4369600092C53 /* JYBanlanceBtn.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5B79C1601CF4369600092C53 /* JYBanlanceBtn.xib */; };
 		5B79C1651CF44DD200092C53 /* JYExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B79C1641CF44DD200092C53 /* JYExposureView.m */; };
 		5B79C1681CF459B900092C53 /* DWBubbleMenuButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B79C1671CF459B900092C53 /* DWBubbleMenuButton.m */; };
+		5B7EA3081D11429100985390 /* JYCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B7EA3051D11429100985390 /* JYCollectionCell.m */; };
+		5B7EA3091D11429100985390 /* JYCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B7EA3071D11429100985390 /* JYCollectionView.m */; };
 		5B821D2F1CF936F70036D69F /* JYVideoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B821D2E1CF936F70036D69F /* JYVideoCamera.m */; };
 		5B861E121CF58E620057837F /* JYLeftTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B861E111CF58E620057837F /* JYLeftTopView.m */; };
 		5B861E141CF5AE150057837F /* SettingData.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B861E131CF5AE150057837F /* SettingData.plist */; };
@@ -46,6 +47,7 @@
 		5B869A671CFD246B0070B08A /* JYRulesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B869A661CFD246B0070B08A /* JYRulesView.m */; };
 		5B869A6C1CFD286D0070B08A /* JYVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B869A6B1CFD286D0070B08A /* JYVideoView.m */; };
 		5B869A6E1CFD9AED0070B08A /* photoShutter2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5B869A6D1CFD9AED0070B08A /* photoShutter2.caf */; };
+		5B89EE1F1D139BC80041981B /* TTMCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B89EE1E1D139BC80041981B /* TTMCaptureManager.m */; };
 		5B931F341D0521D00076E942 /* AAPLStripedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B931F331D0521D00076E942 /* AAPLStripedImage.m */; };
 /* End PBXBuildFile section */
 
@@ -89,8 +91,6 @@
 		5B3614691CFE96AB00A79517 /* JYSeletcedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYSeletcedView.m; sourceTree = "<group>"; };
 		5B3BF51E1CEABED700EFBD58 /* JYHomeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYHomeController.h; sourceTree = "<group>"; };
 		5B3BF51F1CEABED700EFBD58 /* JYHomeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYHomeController.m; sourceTree = "<group>"; };
-		5B3BF52F1CEABEF100EFBD58 /* JYCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYCameraManager.h; sourceTree = "<group>"; };
-		5B3BF5301CEABEF100EFBD58 /* JYCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYCameraManager.m; sourceTree = "<group>"; };
 		5B3BF5361CEAC05F00EFBD58 /* JYNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYNavigationController.h; sourceTree = "<group>"; };
 		5B3BF5371CEAC05F00EFBD58 /* JYNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYNavigationController.m; sourceTree = "<group>"; };
 		5B3BF5391CEB030900EFBD58 /* JYLeftTopViewMasnory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYLeftTopViewMasnory.h; sourceTree = "<group>"; };
@@ -117,6 +117,10 @@
 		5B79C1641CF44DD200092C53 /* JYExposureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYExposureView.m; sourceTree = "<group>"; };
 		5B79C1661CF459B900092C53 /* DWBubbleMenuButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWBubbleMenuButton.h; sourceTree = "<group>"; };
 		5B79C1671CF459B900092C53 /* DWBubbleMenuButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWBubbleMenuButton.m; sourceTree = "<group>"; };
+		5B7EA3041D11429100985390 /* JYCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYCollectionCell.h; sourceTree = "<group>"; };
+		5B7EA3051D11429100985390 /* JYCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYCollectionCell.m; sourceTree = "<group>"; };
+		5B7EA3061D11429100985390 /* JYCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYCollectionView.h; sourceTree = "<group>"; };
+		5B7EA3071D11429100985390 /* JYCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYCollectionView.m; sourceTree = "<group>"; };
 		5B821D2D1CF936F70036D69F /* JYVideoCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYVideoCamera.h; sourceTree = "<group>"; };
 		5B821D2E1CF936F70036D69F /* JYVideoCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYVideoCamera.m; sourceTree = "<group>"; };
 		5B861E101CF58E620057837F /* JYLeftTopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYLeftTopView.h; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 		5B869A6A1CFD286D0070B08A /* JYVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JYVideoView.h; sourceTree = "<group>"; };
 		5B869A6B1CFD286D0070B08A /* JYVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JYVideoView.m; sourceTree = "<group>"; };
 		5B869A6D1CFD9AED0070B08A /* photoShutter2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = photoShutter2.caf; sourceTree = "<group>"; };
+		5B89EE1D1D139BC80041981B /* TTMCaptureManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMCaptureManager.h; sourceTree = "<group>"; };
+		5B89EE1E1D139BC80041981B /* TTMCaptureManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMCaptureManager.m; sourceTree = "<group>"; };
 		5B931F321D0521D00076E942 /* AAPLStripedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLStripedImage.h; sourceTree = "<group>"; };
 		5B931F331D0521D00076E942 /* AAPLStripedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLStripedImage.m; sourceTree = "<group>"; };
 		5B931F351D0525930076E942 /* AAPLMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLMacros.h; sourceTree = "<group>"; };
@@ -275,6 +281,10 @@
 			children = (
 				5B3BF51E1CEABED700EFBD58 /* JYHomeController.h */,
 				5B3BF51F1CEABED700EFBD58 /* JYHomeController.m */,
+				5B7EA3041D11429100985390 /* JYCollectionCell.h */,
+				5B7EA3051D11429100985390 /* JYCollectionCell.m */,
+				5B7EA3061D11429100985390 /* JYCollectionView.h */,
+				5B7EA3071D11429100985390 /* JYCollectionView.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -389,10 +399,10 @@
 		5B3BF52B1CEABED700EFBD58 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
-				5B3BF52F1CEABEF100EFBD58 /* JYCameraManager.h */,
-				5B3BF5301CEABEF100EFBD58 /* JYCameraManager.m */,
 				5B821D2D1CF936F70036D69F /* JYVideoCamera.h */,
 				5B821D2E1CF936F70036D69F /* JYVideoCamera.m */,
+				5B89EE1D1D139BC80041981B /* TTMCaptureManager.h */,
+				5B89EE1E1D139BC80041981B /* TTMCaptureManager.m */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -689,6 +699,7 @@
 				5B86649B1CED9EEB0081FA95 /* JYContentView.m in Sources */,
 				5B79C1581CF4323F00092C53 /* JYButtonCell.m in Sources */,
 				5B3BF53B1CEB030900EFBD58 /* JYLeftTopViewMasnory.m in Sources */,
+				5B7EA3081D11429100985390 /* JYCollectionCell.m in Sources */,
 				5B8664AE1CEDB5F60081FA95 /* JYContentDirection.m in Sources */,
 				5B79C14E1CF405B000092C53 /* JYContentSwitch.m in Sources */,
 				5B931F341D0521D00076E942 /* AAPLStripedImage.m in Sources */,
@@ -699,11 +710,12 @@
 				5B79C1681CF459B900092C53 /* DWBubbleMenuButton.m in Sources */,
 				5B3BF5381CEAC05F00EFBD58 /* JYNavigationController.m in Sources */,
 				5B861E121CF58E620057837F /* JYLeftTopView.m in Sources */,
+				5B7EA3091D11429100985390 /* JYCollectionView.m in Sources */,
 				5B869A6C1CFD286D0070B08A /* JYVideoView.m in Sources */,
 				5B79C1651CF44DD200092C53 /* JYExposureView.m in Sources */,
 				5B3BF52E1CEABED700EFBD58 /* JYHomeController.m in Sources */,
 				5B36146A1CFE96AB00A79517 /* JYSeletcedView.m in Sources */,
-				5B3BF5311CEABEF100EFBD58 /* JYCameraManager.m in Sources */,
+				5B89EE1F1D139BC80041981B /* TTMCaptureManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

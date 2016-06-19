@@ -16,7 +16,9 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 @protocol GPUImageVideoCameraDelegate <NSObject>
 
 @optional
-- (void)willOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer;
+- (void)willOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection;
+- (void)didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
+                                      error:(NSError *)error;
 @end
 
 
@@ -137,10 +139,13 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 /** Get the AVCaptureConnection of the source camera
  */
 - (AVCaptureConnection *)videoCaptureConnection;
+- (AVCaptureConnection *)AVCaptureConnection1;
 
 /** This flips between the front and rear cameras
  */
 - (void)rotateCamera;
+
+@property (nonatomic, strong) AVCaptureConnection *audioConnection;
 
 /// @name Benchmarking
 
@@ -156,5 +161,9 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 - (void)resetFormat;
 
 - (void)switchFormatWithDesiredFPS:(CGFloat)desiredFPS;
+
+- (void)fpsStartRecoding;
+
+- (void)fpsStopRecoding;
 
 @end

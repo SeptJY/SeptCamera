@@ -3,6 +3,10 @@
 #import "GPUImageContext.h"
 
 extern NSString *const kGPUImageColorSwizzlingFragmentShaderString;
+typedef NS_ENUM(NSUInteger, JYCameraSlowMotion) {
+    JYCameraSlowMotionNo,
+    JYCameraSlowMotionYes,
+};
 
 @protocol GPUImageMovieWriterDelegate <NSObject>
 
@@ -67,5 +71,4 @@ extern NSString *const kGPUImageColorSwizzlingFragmentShaderString;
 @property (assign, nonatomic) CGFloat quality;
 
 - (id)initWithMovieURL:(NSURL *)newMovieURL size:(CGSize)newSize quality:(CGFloat)quality;
-
 @end

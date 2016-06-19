@@ -23,6 +23,7 @@
 @property (strong, nonatomic) JYThreeButton *threeBtn;
 
 @property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UITableView *subTableView;
 
 @property (strong, nonatomic) NSMutableArray *settingsArray;
 @property (strong, nonatomic) NSMutableArray *changeArray;

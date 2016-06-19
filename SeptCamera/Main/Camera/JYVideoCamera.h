@@ -47,6 +47,9 @@ typedef void(^CanSetSessionPreset)(BOOL isCan);
 
 - (instancetype)initWithSessionPreset:(NSString *)sessionPreset superView:(UIView *)superView;
 
+@property (nonatomic, copy) void (^onBuffer)(CMSampleBufferRef sampleBuffer);
+@property (nonatomic, assign) BOOL isRecording;
+
 @property (assign, nonatomic) CGSize videoSize;
 
 @property (assign, nonatomic) int32_t frameRate;
@@ -100,5 +103,9 @@ typedef void(^CanSetSessionPreset)(BOOL isCan);
 - (void)aswitchFormatWithDesiredFPS:(CGFloat)desiredFPS;
 
 @property (strong, nonatomic) NSMutableArray *imgsArray;
+
+- (void)aaaaaaaaa;
+
+- (void)bbbbbbbbbbb;
 
 @end

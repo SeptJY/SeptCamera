@@ -112,9 +112,12 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     int imageBufferWidth, imageBufferHeight;
     
     BOOL addedAudioInputsDueToEncodingTarget;
+    CMBufferQueueRef previewBufferQueue;
 }
 
 @property (nonatomic, strong) AVCaptureDeviceFormat *defaultFormat;
+@property (nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
+@property (nonatomic, strong) NSURL *fileUrl;
 
 - (void)updateOrientationSendToTargets;
 - (void)convertYUVToRGBOutput;
@@ -193,10 +196,13 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	{
 		[_captureSession addInput:videoInput];
 	}
+    
+//    self.movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+//    [_captureSession addOutput:self.movieFileOutput];
 	
 	// Add the video frame output	
 	videoOutput = [[AVCaptureVideoDataOutput alloc] init];
-	[videoOutput setAlwaysDiscardsLateVideoFrames:NO];
+	[videoOutput setAlwaysDiscardsLateVideoFrames:YES];
     
 //    if (captureAsYUV && [GPUImageContext deviceSupportsRedTextures])
     if (captureAsYUV && [GPUImageContext supportsFastTextureUpload])
@@ -284,6 +290,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	if ([_captureSession canAddOutput:videoOutput])
 	{
 		[_captureSession addOutput:videoOutput];
+        
 	}
 	else
 	{
@@ -291,8 +298,23 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
         return nil;
 	}
     
+    AVCaptureMetadataOutput* metaDataOutput =[[AVCaptureMetadataOutput alloc] init];
+    if ([_captureSession canAddOutput:metaDataOutput]) {
+        [_captureSession addOutput:metaDataOutput];
+        
+        //_faceUICache =[NSMutableDictionary dictionary];
+        NSArray* supportTypes =metaDataOutput.availableMetadataObjectTypes;
+        
+        //NSLog(@"supports:%@",supportTypes);
+        if ([supportTypes containsObject:AVMetadataObjectTypeFace]) {
+            [metaDataOutput setMetadataObjectTypes:@[AVMetadataObjectTypeFace]];
+            [metaDataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+            
+        }
+    }
+    
 	_captureSessionPreset = sessionPreset;
-    [_captureSession setSessionPreset:_captureSessionPreset];
+    [_captureSession setSessionPreset:AVCaptureSessionPreset1280x720];
 
 // This will let you get 60 FPS video from the 720p preset on an iPhone 4S, but only that device and that preset
 //    AVCaptureConnection *conn = [videoOutput connectionWithMediaType:AVMediaTypeVideo];
@@ -304,7 +326,70 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     
     [_captureSession commitConfiguration];
     
+    // BufferQueue
+    OSStatus err = CMBufferQueueCreate(kCFAllocatorDefault, 1, CMBufferQueueGetCallbacksForUnsortedSampleBuffers(), &previewBufferQueue);
+    NSLog(@"CMBufferQueueCreate error:%d", err);
+    
 	return self;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+    if (metadataObjects.count != 0)
+    {
+        //在这里执行检测到人脸后要执行的代码
+        /*人脸数据存在metadataObjects这个数组里，数组中每一个元素对应一个metadataObject对象，该对象的各种属性对应人脸各种信息，具体可以查看API*/
+        NSLog(@"%@", metadataObjects);
+        AVMetadataFaceObject *faceObject = metadataObjects[0];
+//        NSLog(@"%@", faceObject);
+    }
+}
+
+- (void)fpsStartRecoding
+{
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd-HH-mm-ss"];
+    NSString* dateTimePrefix = [formatter stringFromDate:[NSDate date]];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    int fileNamePostfix = 0;
+    NSString *filePath = nil;
+    
+    do
+        filePath =[NSString stringWithFormat:@"/%@/%@-%i.mp4", documentsDirectory, dateTimePrefix, fileNamePostfix++];
+    while ([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
+    
+    self.fileUrl = [NSURL URLWithString:[@"file://" stringByAppendingString:filePath]];
+    
+    [self.movieFileOutput startRecordingToOutputFileURL:self.fileUrl recordingDelegate:self];
+}
+
+- (void)fpsStopRecoding
+{
+    [self.movieFileOutput stopRecording];
+}
+
+#pragma mark - AVCaptureFileOutputRecordingDelegate
+
+- (void)                 captureOutput:(AVCaptureFileOutput *)captureOutput
+    didStartRecordingToOutputFileAtURL:(NSURL *)fileURL
+                       fromConnections:(NSArray *)connections
+{
+    NSLog(@"开始录制");
+}
+
+- (void)                 captureOutput:(AVCaptureFileOutput *)captureOutput
+   didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
+                       fromConnections:(NSArray *)connections error:(NSError *)error
+{
+    //    [self saveRecordedFile:outputFileURL];
+    NSLog(@"结束录制");
+    
+    if ([self.delegate respondsToSelector:@selector(didFinishRecordingToOutputFileAtURL:error:)]) {
+        [self.delegate didFinishRecordingToOutputFileAtURL:outputFileURL error:error];
+    }
 }
 
 - (GPUImageFramebuffer *)framebufferForOutput;
@@ -353,6 +438,8 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
         NSLog(@"Couldn't add audio output");
     }
     [audioOutput setSampleBufferDelegate:self queue:audioProcessingQueue];
+    
+    self.audioConnection = [audioOutput connectionWithMediaType:AVMediaTypeAudio];
     
     [_captureSession commitConfiguration];
     return YES;
@@ -568,7 +655,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     AVFrameRateRange *frameRateRange = nil;
     
     for (AVCaptureDeviceFormat *format in [_inputCamera formats]) {
-        
+//        NSLog(@"%@", format);
         for (AVFrameRateRange *range in format.videoSupportedFrameRateRanges) {
             
             CMFormatDescriptionRef desc = format.formatDescription;
@@ -673,7 +760,12 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	return _frameRate;
 }
 
-- (AVCaptureConnection *)videoCaptureConnection {
+- (AVCaptureConnection *)AVCaptureConnection1
+{
+    return [videoOutput connectionWithMediaType:AVMediaTypeVideo];
+}
+
+- (AVCaptureConnection *)AVCaptureConnection {
     for (AVCaptureConnection *connection in [videoOutput connections] ) {
 		for ( AVCaptureInputPort *port in [connection inputPorts] ) {
 			if ( [[port mediaType] isEqual:AVMediaTypeVideo] ) {
@@ -1001,12 +1093,17 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     totalFrameTimeDuringCapture = 0.0;
 }
 
+
 #pragma mark -
 #pragma mark AVCaptureVideoDataOutputSampleBufferDelegate
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    
+//    NSLog(@"%@", videoOutput.videoSettings);
+    if (self.delegate)
+    {
+        [self.delegate willOutputSampleBuffer:sampleBuffer fromConnection:connection];
+    }
     if (!self.captureSession.isRunning)
     {
         return;
@@ -1025,10 +1122,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
         CFRetain(sampleBuffer);
         runAsynchronouslyOnVideoProcessingQueue(^{
             //Feature Detection Hook.
-            if (self.delegate)
-            {
-                [self.delegate willOutputSampleBuffer:sampleBuffer];
-            }
+            
             
             [self processVideoSampleBuffer:sampleBuffer];
             
@@ -1036,6 +1130,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
             dispatch_semaphore_signal(frameRenderingSemaphore);
         });
     }
+    
 }
 
 #pragma mark -

@@ -16,16 +16,26 @@
 #import "JYVideoCamera.h"
 #import "JYRulesView.h"
 #import "JYVideoView.h"
+#import <MediaPlayer/MediaPlayer.h>
+#import "JYCollectionView.h"
+#import "TTMCaptureManager.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #define ScreenW [UIScreen mainScreen].bounds.size.width
 #define ScreenH [UIScreen mainScreen].bounds.size.height
 
-@interface JYHomeController () <DWBubbleMenuViewDelegate, JYLeftTopViewDelegate, JYVideoCameraDelegate, JYVideoViewDelegate>
+static void * DeviceExposureDuration = &DeviceExposureDuration;
+static NSString *cellID = @"cell";
+
+@interface JYHomeController () <DWBubbleMenuViewDelegate, JYLeftTopViewDelegate, JYVideoCameraDelegate, JYVideoViewDelegate, JYCollectionViewDelegate, TTMCaptureManagerDelegate>
 {
     NSTimer *_timer;
     CMSampleBufferRef _sampleBufferRef;
 }
 
+@property (nonatomic, strong) TTMCaptureManager *captureManager;
+
+@property (strong, nonatomic) JYCollectionView *collectionView;
 @property (strong, nonatomic) JYVideoCamera *videoCamera;
 
 @property (strong, nonatomic) UIView *subView;
@@ -57,6 +67,12 @@
 
 @property (assign, nonatomic) CGFloat focus;
 
+@property (strong, nonatomic) UILabel *focusLabel;
+
+@property (assign, nonatomic) CGFloat time;
+
+@property (strong, nonatomic) UISlider *soundSlider;
+
 @end
 
 @implementation JYHomeController
@@ -66,6 +82,8 @@
     [super viewDidLoad];
     
     self.navigationController.navigationBarHidden = YES;
+    
+    self.time = 1.0;
     
     [self initVideoCamera];
     
@@ -81,7 +99,8 @@
     [self.rulesView addGestureRecognizer:panGesture];
     self.imgsArray = [NSMutableArray array];
     
-    _timer = [NSTimer scheduledTimerWithTimeInterval:180.0/1000 target:self selector:@selector(longExposure) userInfo:nil repeats:YES];
+//    NSLog(@"%f", CMTimeGetSeconds(self.videoCamera.videoCamera.inputCamera.exposureDuration));
+    _timer = [NSTimer scheduledTimerWithTimeInterval:0.34 target:self selector:@selector(longExposure) userInfo:nil repeats:YES];
     [_timer setFireDate:[NSDate distantFuture]];
     
 //    [self addObserver:self forKeyPath:@"videoFocus" options:NSKeyValueObservingOptionNew context:nil];
@@ -98,13 +117,28 @@
 //    UIImageWriteToSavedPhotosAlbum([self createLongExposure:imgs], nil, nil, nil);
     
     
-    NSLog(@"%u", arc4random() % 4);
+//    NSLog(@"%u", arc4random() % 4);
+    [self.videoCamera.videoCamera.inputCamera addObserver:self forKeyPath:@"exposureDuration" options:NSKeyValueObservingOptionNew context:DeviceExposureDuration];
     
+    self.soundSlider = [self createSlider];
 }
 
 -(CGFloat)getRandomNumber:(int)from to:(int)to
 {
     return (CGFloat)(from + (arc4random() % 4));
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == DeviceExposureDuration) {   // 曝光时间
+        self.time = CMTimeGetSeconds(self.videoCamera.videoCamera.inputCamera.exposureDuration);
+        self.focusLabel.text = [NSString stringWithFormat:@"%f", self.time];
+//        _timer = [NSTimer scheduledTimerWithTimeInterval:self.time target:self selector:@selector(longExposure) userInfo:nil repeats:YES];
+//        [_timer setFireDate:[NSDate distantFuture]];
+    }
+    else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)addSubviews
@@ -123,10 +157,12 @@
     [self.videoCamera flashModel:AVCaptureFlashModeOff];
     //        [self.bottomPreview addSubview:_videoCamera.subPreview];
     [self.videoCamera cameraManagerChangeFoucus:1.2];
-//    [self.videoCamera setExposureDurationWith:0.8];
+//    [self.videoCamera setExposureDurationWith:0.1];
+//    [self.videoCamera cameraManagerExposureIOS:46];
 //    [self.videoCamera prepareHDRWithIndex:1];
 //    self.videoCamera.frameRate = 60;
-//    [self.videoCamera aswitchFormatWithDesiredFPS:120];
+//    [self.videoCamera cameraManagerEffectqualityWithTag:61 withBlock:nil];
+//    [self.videoCamera aswitchFormatWithDesiredFPS:240];
     
     self.videoCamera.delegate = self;
 }
@@ -140,6 +176,59 @@
         [self.view addSubview:_subView];
     }
     return _subView;
+}
+
+- (void)saveRecordedFile:(NSURL *)recordedFile {
+    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(queue, ^{
+        
+        ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+        [assetLibrary writeVideoAtPathToSavedPhotosAlbum:recordedFile
+                                         completionBlock:
+         ^(NSURL *assetURL, NSError *error) {
+             
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 
+                 NSString *title;
+                 NSString *message;
+                 
+                 if (error != nil) {
+                     
+                     title = @"Failed to save video";
+                     message = [error localizedDescription];
+                 }
+                 else {
+                     title = @"Saved!";
+                     message = nil;
+                 }
+                 
+                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                                 message:message
+                                                                delegate:nil
+                                                       cancelButtonTitle:@"OK"
+                                                       otherButtonTitles:nil];
+                 [alert show];
+             });
+         }];
+    });
+}
+
+
+
+// =============================================================================
+#pragma mark - AVCaptureManagerDeleagte
+
+- (void)didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL error:(NSError *)error {
+    
+    LOG_CURRENT_METHOD;
+    
+    if (error) {
+        NSLog(@"error:%@", error);
+        return;
+    }
+    
+    [self saveRecordedFile:outputFileURL];
 }
 
 - (JYRulesView *)rulesView
@@ -172,6 +261,40 @@
     return _mycontentView;
 }
 
+- (UILabel *)focusLabel
+{
+    if (!_focusLabel) {
+        
+        _focusLabel = [[UILabel alloc] init];
+        
+        _focusLabel.textColor = [UIColor yellowColor];
+        _focusLabel.textAlignment = NSTextAlignmentCenter;
+        
+        [self.subView addSubview:_focusLabel];
+    }
+    return _focusLabel;
+}
+
+- (JYCollectionView *)collectionView
+{
+    if (!_collectionView) {
+        
+        _collectionView = [JYCollectionView collectionViewWithSize:CGSizeMake(300, 40)];
+        
+        _collectionView.backgroundColor= [[UIColor blackColor] colorWithAlphaComponent:0.3];
+        _collectionView.delegate = self;
+        _collectionView.hidden = YES;
+        
+        [self.subView addSubview:_collectionView];
+    }
+    return _collectionView;
+}
+
+- (void)collectionViewDidSelectIndex:(NSInteger)index
+{
+    
+}
+
 #pragma mark -------------------------> JYVideoViewDelegate
 - (void)videoViewBtnOnClick:(UIButton *)btn
 {
@@ -179,11 +302,24 @@
         case 20:
             btn.selected = !btn.selected;
             if (btn.selected == 1) {
-//                [self.videoCamera startVideo];
-                [self.videoCamera prepareHDRWithIndex:1];
+                
+//                [self.captureManager testStart];
+                [self.videoCamera startVideo];
+//                [self.videoCamera prepareHDRWithIndex:1];
+                [_timer setFireDate:[NSDate date]];
+//                [self.soundSlider setValue:0.0f animated:NO];
+//                [self.soundSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
             } else {
-//                [self.videoCamera stopVideo];
-                [self.videoCamera prepareHDRWithIndex:0];
+//                [self.videoCamera bbbbbbbbbbb];
+//                [self.captureManager testStop];
+                [self.videoCamera stopVideo];
+//                [self.videoCamera prepareHDRWithIndex:0];
+//                [self.soundSlider setValue:0.8f animated:NO];
+//                [self.soundSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
+                [_timer setFireDate:[NSDate distantFuture]];
+//                NSLog(@"%@", self.videoCamera.imgsArray);
+//                UIImageWriteToSavedPhotosAlbum([self createLongExposure:self.videoCamera.imgsArray], nil, nil, nil);
+//                [self.videoCamera.imgsArray removeAllObjects];
             }
             break;
         case 21:
@@ -191,7 +327,7 @@
             break;
         case 22:
         {
-//            [self.videoCamera takePhoto];
+            [self.videoCamera takePhoto];
 //            [self.videoCamera takePhotosWithHDR];
 //            [self.videoCamera takePhotoWithArray];
 //            self.num = 5;
@@ -200,7 +336,7 @@
 //            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
             
 //            [_timer setFireDate:[NSDate date]];
-            [self.videoCamera takePhotosWithHDR];
+//            [self.videoCamera takePhotosWithHDR];
 //            NSLog(@"%f", self.focus);
 //            [self performSelector:@selector(stop) withObject:nil afterDelay:self.focus / (screenH - 30) * 3 + 1];
         }
@@ -209,6 +345,23 @@
         default:
             break;
     }
+}
+
+- (UISlider *)createSlider
+{
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    volumeView.hidden = NO;
+    volumeView.frame = CGRectMake(-1000, -1000, 100, 100);
+    
+    [self.subView addSubview:volumeView];
+    UISlider* volumeViewSlider = nil;
+    for (UIView *view in [volumeView subviews]){
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+            volumeViewSlider = (UISlider*)view;
+            break;
+        }
+    }
+    return volumeViewSlider;
 }
 
 - (void)stop
@@ -228,7 +381,7 @@
         _slide.value = 0.5;
         _slide.minimumValue = 0;
         _slide.maximumValue = 1;
-        _slide.hidden = YES;
+//        _slide.hidden = YES;
         
         [_slide addTarget:self action:@selector(slideValueChange:) forControlEvents:UIControlEventValueChanged];
     }
@@ -238,6 +391,10 @@
 - (void)slideValueChange:(UISlider *)slide
 {
     [self.videoCamera setExposureDurationWith:slide.value];
+    NSLog(@"%f", slide.value);
+//    [self.videoCamera.saturationFilter setSaturation:slide.value];
+//    NSLog(@"%f", CMTimeGetSeconds(self.videoCamera.videoCamera.inputCamera.exposureDuration));
+//    self.focusLabel.text = [NSString stringWithFormat:@"%f", CMTimeGetSeconds(self.videoCamera.videoCamera.inputCamera.exposureDuration)];
 }
 
 - (void)panGestureOnClick:(UIPanGestureRecognizer *)panGesture
@@ -266,7 +423,12 @@
     
 //    [self.imgsArray addObject:image];
 //    [self.videoCamera takePhotoWithArray];
-    NSLog(@"%u", arc4random() % 4);
+    self.time += 0.02;
+//    if (self.time >= 4.0) {
+//        self.time -= 0.2;
+//    } else if (self.time >= 0.0 && self.)
+    [self.videoCamera cameraManagerVideoZoom:self.time];
+//    NSLog(@"%u", arc4random() % 4);
 }
 
 - (void)cameraManageTakingPhotoSucuess:(UIImage *)image
@@ -346,6 +508,42 @@
 - (void)leftTopViewQuickOrSettingBtnOnClick:(UIButton *)btn
 {
     self.mycontentView.hidden = !btn.selected;
+//    if (btn.selected == 1) {
+//        [self.videoCamera aaaaaaaaa];
+//        for (UIView *subView in self.view.subviews) {
+//            if ([[subView class] isSubclassOfClass:[GPUImageView class]]) {
+//                subView.hidden = YES;
+//            }
+//        }
+//        NSLog(@"%@", self.view.layer.sublayers);
+//        self.captureManager = [[TTMCaptureManager alloc] initWithPreviewView:self.view
+//                                                         preferredCameraType:CameraTypeBack
+//                                                                  outputMode:OutputModeVideoData];
+//        self.captureManager.delegate = self;
+//        
+//        [self.captureManager switchFormatWithDesiredFPS:120];
+//    } else{
+//        [self.captureManager stopCapature];
+//        self.captureManager = nil;
+//
+//        for (CALayer *layer in self.view.layer.sublayers) {
+//            if ([[layer class] isSubclassOfClass:[AVCaptureVideoPreviewLayer class]]) {
+//                layer.hidden = YES;
+//            }
+//        }
+//        
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            for (UIView *subView in self.view.subviews) {
+//                if ([[subView class] isSubclassOfClass:[GPUImageView class]]) {
+//                    subView.hidden = NO;
+//                }
+//            }
+////            NSLog(@"%@", self.view.subviews);
+////
+//            [self.videoCamera bbbbbbbbbbb];
+//        });
+//    }
+    
 }
 
 - (DWBubbleMenuButton *)menuBtn
@@ -599,7 +797,7 @@
     
     [self.slide mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(weakSelf.view).offset(-20);
-        make.right.mas_equalTo(weakSelf.videoView).offset(-10);
+        make.right.mas_equalTo(weakSelf.videoView.mas_left).offset(-10);
         make.left.equalTo(weakSelf.view).offset(10);
     }];
     
@@ -609,6 +807,18 @@
         make.right.mas_equalTo(weakSelf.videoView.mas_left).offset(-20);
         make.top.equalTo(weakSelf.view).offset(65);
         
+    }];
+    
+    [self.focusLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(weakSelf.slide);
+        make.bottom.mas_equalTo(weakSelf.slide.mas_top).offset(-15);
+    }];
+    
+    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(weakSelf.view).offset(70);
+        make.bottom.equalTo(weakSelf.view).offset(-20);
+        make.height.mas_equalTo(40);
+        make.right.mas_equalTo(weakSelf.videoView.mas_left).offset(-20);
     }];
 }
 
